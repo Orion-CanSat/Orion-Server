@@ -4,11 +4,10 @@ using System;
 
 namespace OrionServer.Data
 {
-    public class Temperature
+    public class Humidity
     {
         public DateTime Date { get; set; }
-        public double TemperatureC { get; set; }
-        public double TemperatureF => (TemperatureC / 0.5556) + 32;
+        public double RelativeHumidity { get; set; }
         public string? Notice { get; set; }
     }
 }

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿#nullable enable
+
+using System;
 
 namespace OrionServer.Data
 {
@@ -10,6 +9,6 @@ namespace OrionServer.Data
         public DateTime Date { get; set; }
         public double AltitudeM { get; set; }
         public double AltitudeF => AltitudeM * 3.2808;
-        public string Notice { get; set; }
+        public string? Notice { get; set; }
     }
 }

@@ -4,11 +4,11 @@ using System;
 
 namespace OrionServer.Data
 {
-    public class Temperature
+    public class Pressure
     {
         public DateTime Date { get; set; }
-        public double TemperatureC { get; set; }
-        public double TemperatureF => (TemperatureC / 0.5556) + 32;
+        public double PressurePa { get; set; }
+        public double PressurekPa => PressurePa / 1000;
         public string? Notice { get; set; }
     }
 }
