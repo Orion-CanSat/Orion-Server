@@ -13,6 +13,7 @@ namespace OrionServer
     {
         public static void Main(string[] args)
         {
+            Startup.CreateUpdateWWWData();
             CreateHostBuilder(args).Build().Run();
         }
 

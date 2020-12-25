@@ -4,14 +4,92 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OrionServer
 {
     public class Startup
     {
+        /// <summary>
+        /// This function will create and load all WWWData files
+        /// </summary>
+        public static void CreateUpdateWWWData()
+        {
+            // Checks if wwwdata folder exists and if it does not it creates it.
+            {
+                try
+                {
+                    if (!Directory.Exists(Constants.WWWDataFolder))
+                        Directory.CreateDirectory(Constants.WWWDataFolder);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Utilities.ExceptionConsoleWriter<UnauthorizedAccessException>
+                        .ShowException(e, "Orion Server does not have the right permission to create a wwwdata folder.", true, 1);
+                }
+                catch (Exception e)
+                {
+                    Utilities.ExceptionConsoleWriter<Exception>
+                        .ShowException(e, "Orion Server encountered a fatal exception while trying to create wwwdata folder.", true, 1);
+                }
+            }
+
+            // Checks if previous authentication keys are still present and deletes them.
+            // Then if creates new ones.
+            {
+                try
+                {
+                    if (File.Exists(Constants.AuthenticationKeysFile))
+                        File.Delete(Constants.AuthenticationKeysFile);
+                    string authorizedKey = Utilities.StringUtilities.GenerateRandomString(28);
+                    File.WriteAllLines(
+                        Constants.AuthenticationKeysFile,
+                        new string[]
+                        {
+                            "{",
+                            "\t\"keys\": [",
+                            "\t\t\"" + authorizedKey + "\"",
+                            "\t]",
+                            "}"
+                        },
+                        Encoding.UTF8
+                    );
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("[Authorized Key]: ");
+                    Console.ResetColor();
+                    Console.WriteLine(authorizedKey);
+                }
+                catch (DirectoryNotFoundException e)
+                {
+                    Utilities.ExceptionConsoleWriter<DirectoryNotFoundException>
+                        .ShowException(e, "Orion Server can not locate wwwdata folder", true, 1);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Utilities.ExceptionConsoleWriter<UnauthorizedAccessException>
+                        .ShowException(e, "Orion Server does not have the right permission to create a delete/write the authentication keys.", true, 1);
+                }
+                catch (IOException e)
+                {
+                    Utilities.ExceptionConsoleWriter<IOException>
+                        .ShowException(e, "Orion Server does can not delete previous authentication files because they are still used by an other proccess.", true, 1);
+                }
+                catch (Exception e)
+                {
+                    Utilities.ExceptionConsoleWriter<Exception>
+                        .ShowException(e, "Orion Server encountered a fatal exception while trying to create authentication keys.", true, 1);
+                }
+            }
+
+            // Load Authorized keys
+            Utilities.Authenticator.LoadAuthenticationKeys();
+        }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
