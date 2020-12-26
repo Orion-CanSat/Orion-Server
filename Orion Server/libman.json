@@ -4,7 +4,11 @@
   "libraries": [
     {
       "library": "Chart.js@2.9.4",
-      "destination": "wwwroot/lib/Chart.js/"
+      "destination": "wwwroot/lib/Chart.js/",
+      "files": [
+        "Chart.min.js",
+        "Chart.min.css"
+      ]
     }
   ]
 }
