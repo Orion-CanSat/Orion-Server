@@ -3,42 +3,16 @@
     ViewData["Title"] = "Live Temperature";
 }
 
+@section scripts
+{
+    <script type="text/javascript" src="~/js/chart.js"></script>
+    <script type="text/javascript" src="~/js/Live/Temperature.js"></script>
+}
+
 <div class="chart-container">  
     <canvas id="temperatureChart" style="width:80%"></canvas>  
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 <script type="text/javascript">
-    var temperatureChartConfig = {
-        type: 'line',
-        data: {
-            labels: ['Hello'],
-            datasets: [
-                {
-                    label: 'Test',
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    data: [
-                        43.45
-                    ]
-                }
-            ]
-        },
-        options: {
-            maintainAspectRatio: true
-        }
-    };
 
-    var chart;
-    function LoadChart()
-    {
-        var chartName = "temperatureChart";
-        var ctx = document.getElementById(chartName).getContext('2d');
-
-        chart = new Chart(ctx, temperatureChartConfig);
-    }
-
-    window.onload = function() {
-        LoadChart();
-    }
 </script>
