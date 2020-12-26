@@ -14,7 +14,7 @@ namespace OrionServer.Controllers.Data.Generic
     public class GenericDataController<T, U> : ControllerBase where T: class where U: class
     {
         private readonly ILogger<U> _logger;
-        private static readonly List<T> _data = new();
+        internal static readonly List<T> _data = new();
 
         public GenericDataController(ILogger<U> logger)
         {

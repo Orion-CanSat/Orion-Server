@@ -18,6 +18,7 @@ namespace OrionServer.Controllers
             _logger = logger;
         }
 
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
         public IActionResult Index()
         {
             return View(new HomeViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
