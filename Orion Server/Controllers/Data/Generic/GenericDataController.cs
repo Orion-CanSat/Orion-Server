@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 namespace OrionServer.Controllers.Data.Generic
 {
     [ApiController]
@@ -20,18 +22,36 @@ namespace OrionServer.Controllers.Data.Generic
         }
 
         [HttpGet]
-        public IEnumerable<T> Get()
+        public string Get()
         {
-            int numberOfValuesToGet = 5;
-            return _data.Skip(Math.Max(0, _data.Count() - numberOfValuesToGet)).ToArray();
+            string returnVal = "{\"response\": false}";
+            try
+            {
+                returnVal = $"{{\"response\": true, \"responseData\": {JsonConvert.SerializeObject(_data[_data.Count - 1])}}}";
+            }
+            catch { }
+
+            return returnVal;
         }
 
-        [HttpPost("{dt}")]
-        public string Post(string dt)
+        [HttpPost]
+        public string Post([FromHeader] string authenticationKey, [FromBody] T requestData)
         {
-            T temp = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dt);
-            _data.Add(temp);
-            return "{\"response\":true}";
+            string returnVal = "{\"response\": false}";
+            try
+            {
+                if (!Utilities.Authenticator.IsAuthorizedKey(authenticationKey))
+                {
+                    returnVal = "{\"response\": false, \"responseMessage\": \"Unauthorized User\"}";
+                }
+                else
+                {
+                    _data.Add(requestData);
+                    returnVal = "{\"response\": true}";
+                }
+            }
+            catch { }
+            return returnVal;
         }
     }
 }
