@@ -38,6 +38,39 @@ namespace OrionServer
                 }
             }
 
+            // Checks if data folder exists and if it does not it creates it.
+            {
+                try
+                {
+                    if (!Directory.Exists(Constants.DataFolder))
+                        Directory.CreateDirectory(Constants.DataFolder);
+                    else
+                    {
+                        for (int i = 0; ; i++)
+                        {
+                            if (!Directory.Exists($"{Constants.DataFolder}/old{i}"))
+                            {
+                                String[] files = Directory.GetFiles(Constants.DataFolder);
+                                Directory.CreateDirectory($"{Constants.DataFolder}/old{i}");
+                                foreach (string file in files)
+                                    Directory.Move(file, $"{Constants.DataFolder}/old{i}/{Path.GetFileName(file)}");
+                                break;
+                            }
+                        }
+                    }    
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Utilities.ExceptionConsoleWriter<UnauthorizedAccessException>
+                        .ShowException(e, "Orion Server does not have the right permission to create a wwwdata folder.", true, 1);
+                }
+                catch (Exception e)
+                {
+                    Utilities.ExceptionConsoleWriter<Exception>
+                        .ShowException(e, "Orion Server encountered a fatal exception while trying to create wwwdata folder.", true, 1);
+                }
+            }
+
             // Checks if previous authentication keys are still present and deletes them.
             // Then if creates new ones.
             {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,11 +15,13 @@ namespace OrionServer.Controllers.Data.Generic
     public class GenericDataController<T, U> : ControllerBase where T: class where U: class
     {
         private readonly ILogger<U> _logger;
+        private static Utilities.AsyncO _writer;
         internal static readonly List<T> _data = new();
 
-        public GenericDataController(ILogger<U> logger)
+        public GenericDataController(ILogger<U> logger, StreamWriter stream)
         {
             _logger = logger;
+            _writer = new Utilities.AsyncO(stream);
         }
 
         [HttpGet]
@@ -35,7 +38,7 @@ namespace OrionServer.Controllers.Data.Generic
         }
 
         [HttpPost]
-        public string Post([FromHeader] string authenticationKey, [FromBody] T requestData)
+        public async Task<string> Post([FromHeader] string authenticationKey, [FromBody] T requestData)
         {
             string returnVal = "{\"response\": false}";
             try
@@ -46,6 +49,7 @@ namespace OrionServer.Controllers.Data.Generic
                 }
                 else
                 {
+                    await _writer.WriteLine($"+ {JsonConvert.SerializeObject(requestData)}");
                     _data.Add(requestData);
                     returnVal = "{\"response\": true}";
                 }
