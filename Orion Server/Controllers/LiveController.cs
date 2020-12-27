@@ -18,8 +18,15 @@ namespace OrionServer.Controllers
             _logger = logger;
         }
 
-        public IActionResult Temperature()
+        public IActionResult Index(string id)
         {
+            string[] charts = id.Split('-');
+            List<string[]> chartsToShow = new List<string[]>();
+            for (int i = 0; i < charts.Length; i++)
+                chartsToShow.Add(charts[i].Split('_'));
+
+            ViewBag.ChartsToShow = chartsToShow;
+
             return View(new LiveViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
