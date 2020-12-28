@@ -2,9 +2,12 @@ name: .NET Continuous Integration
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - AdminPanel
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build-ubuntu-20-4:

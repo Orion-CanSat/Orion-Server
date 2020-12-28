@@ -102,9 +102,9 @@ namespace OrionServer.Utilities
             List<string> lines = new();
             lines.Add("{");
             lines.Add("\t\"keys\": [");
-            foreach(string key in _keys)
-                lines.Add($"\t\t\"{key}\"");
-            lines.Add("\t]");
+            for (int i = 0; i < _keys.Count - 1; i++)
+                lines.Add($"\t\t\"{_keys[i]}\",");
+            lines.Add($"\t\t\"{_keys[_keys.Count - 1]}\"\n\t]");
             lines.Add("}");
 
             File.WriteAllLines(
@@ -112,6 +112,11 @@ namespace OrionServer.Utilities
                 lines.ToArray(),
                 Encoding.UTF8
             );
+        }
+
+        internal static List<string> GetAllKeys()
+        {
+            return new List<string>(_keys);
         }
     }
 }

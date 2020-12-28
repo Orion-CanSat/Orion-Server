@@ -151,12 +151,15 @@ namespace OrionServer
 
             app.Use(async (context, next) =>
             {
-                await next();
-                if (context.Response.StatusCode == 404)
+                try
                 {
-                    context.Request.Path = "/Home/Error";
                     await next();
-                }
+                    if (context.Response.StatusCode == 404)
+                    {
+                        context.Request.Path = "/Home/Error";
+                        await next();
+                    }
+                } catch { }
             });
             app.UseStaticFiles();
             app.UseRouting();
