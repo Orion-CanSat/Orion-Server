@@ -1,0 +1,47 @@
+@model AdminViewModel
+@{
+    ViewData["Title"] = "Admin Page";
+}
+
+@section scripts
+{
+    <script type="text/javascript" src="~/js/Admin/Admin.js"></script>
+    <script>const authenticationKey = "@Model.AuthenticationKey"; </script>
+}
+
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container">
+        <a class="navbar-brand">Orion Server Admin Panel</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a id="homeBtn" class="nav-link text-dark" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a id="authenticationKeyBtn" class="nav-link text-dark" href="#">Authentication Keys</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="pages">
+    <div id="Index-Page">
+        <div class="text-center">
+            <h1 class="display-4">Welcome to Admin Panel of the Orion Live Server</h1>
+        </div>
+    </div>
+    <div id="Authentication-Page">
+        <div class="text-center">
+            <h1 class="display-4">Orion Authentication Page</h1>
+        </div>
+        <div class="text-center">
+            <button id="reloadAuthenticationKeys" class="btn btn-primary" style="top-padding: 5vh; bottom-padding: 5vh; width: 100%">Reload</button>
+        </div>
+        <div id="authenticationKeysTable"></div>
+    </div>
+</div>
