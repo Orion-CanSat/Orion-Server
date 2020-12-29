@@ -27,9 +27,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="/Live/Index/temperature-pressure-altitude">Live View</a>
                         </li>
+                        @{
+                            if ((ViewBag.LoggedIn == null) || (ViewBag.LoggedIn == false))
+                            {
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="/Admin/">Admin Panel</a>
                         </li>
+                            }
+                            else
+                            {
+                        <li class="nav-item">
+                            <a id="authenticationKeyBtn" class="nav-link text-dark" href="#">Authentication Keys</a>
+                        </li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>

@@ -27,7 +27,8 @@ namespace OrionServer.Controllers
         private Dictionary<string, Func<string, string>> response = new Dictionary<string, Func<string, string>>()
         {
             { "getAllKeys", (string param) => { return JsonConvert.SerializeObject(Utilities.Authenticator.GetAllKeys()); }},
-            { "addKey", (string param) => { Utilities.Authenticator.AuthorizeKey(param); return $"{{\"response\": true }}"; } }
+            { "addKey", (string param) => { Utilities.Authenticator.AuthorizeKey(param); return $"{{\"response\": true }}"; } },
+            { "removeKey", (string param) => { Utilities.Authenticator.RemoveKey(param); return "{\"response\": true}"; } }
         };
 
         public AdminAPIController(ILogger<AdminAPIController> logger)

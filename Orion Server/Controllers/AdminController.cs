@@ -38,6 +38,7 @@ namespace OrionServer.Controllers
             else
             {
                 ViewBag.Id = id;
+                ViewBag.LoggedIn = true;
                 return View(new AdminViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, AuthenticationKey = id });
             }
         }

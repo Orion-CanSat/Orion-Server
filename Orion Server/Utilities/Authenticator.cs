@@ -1,15 +1,30 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrionServer.Utilities
 {
+    public class TripleValue<T1, T2, T3>
+    {
+        public TripleValue(T1 Item1, T2 Item2, T3 Item3) 
+        {
+            this.Item1 = Item1;
+            this.Item2 = Item2;
+            this.Item3 = Item3;
+        }
+        public T1 Item1 { get; set; }
+        public T2 Item2 { get; set; }
+        public T3 Item3 { get; set; }
+    }
     public class Authenticator
     {
-        private static readonly List<string> _keys = new();
+        private static readonly List<TripleValue<string, string, DateTime>> _keys = new();
 
         /// <summary>
         /// Loads all keys from AuthenticationKeys file in WWWData
@@ -23,7 +38,7 @@ namespace OrionServer.Utilities
                 JToken tokens = JsonConvert.DeserializeObject<JToken>(fileContent);
                 string[] keys = tokens.SelectToken("keys").ToObject<string[]>();
                 foreach (string key in keys)
-                    _keys.Add(key);
+                    _keys.Add(new TripleValue<string, string, DateTime>(key, "", new DateTime()));
                 RemoveDuplicateKeys();
                 SaveKeys();
             }
@@ -61,7 +76,35 @@ namespace OrionServer.Utilities
         /// <returns>Returns true if key is authorized</returns>
         public static bool IsAuthorizedKey(string key)
         {
-            return _keys.Contains(key);
+            return FindIndexOfKey(key) >= 0;
+        }
+
+        /// <summary>
+        /// Returns the index of the key given
+        /// </summary>
+        /// <param name="key">Key to remove</param>
+        /// <returns>Index of the key in the list</returns>
+        private static int FindIndexOfKey(string key)
+        {
+            int min = 0;
+            int max = _keys.Count - 1;
+
+            while (min <= max)
+            {
+                int mid = (min + max) / 2;
+
+                int comparison = string.Compare(_keys[mid].Item1, key);
+                if (comparison == 0)
+                {
+                    _keys[mid].Item3 = DateTime.Now;
+                    return mid;
+                }
+                else if (comparison > 0)
+                    min = mid + 1;
+                else
+                    max = mid - 1;
+            }
+            return -1;
         }
 
         /// <summary>
@@ -70,9 +113,19 @@ namespace OrionServer.Utilities
         /// <param name="key">Key to be authorized</param>
         public static void AuthorizeKey(string key)
         {
-            _keys.Add(key);
+            _keys.Add(new TripleValue<string, string, DateTime>(key, "", new DateTime()));
             RemoveDuplicateKeys();
             SaveKeys();
+        }
+
+        /// <summary>
+        /// Removed key
+        /// </summary>
+        /// <param name="key">Key to remove</param>
+        public static void RemoveKey(string key)
+        {
+            if (FindIndexOfKey(key) >= 0)
+                _keys.RemoveAt(FindIndexOfKey(key));
         }
 
         /// <summary>
@@ -81,13 +134,13 @@ namespace OrionServer.Utilities
         /// </summary>
         private static void RemoveDuplicateKeys()
         {
-            HashSet<string> uniqueKeySet = new HashSet<string>(_keys.ToArray());
+            HashSet<string> uniqueKeySet = new HashSet<string>(from key in _keys select key.Item1);
             string[] keys = new string[uniqueKeySet.Count];
             uniqueKeySet.CopyTo(keys);
 
             _keys.Clear();
             foreach (string key in keys)
-                _keys.Add(key);
+                _keys.Add(new TripleValue<string, string, DateTime>(key, "", new DateTime()));
 
             _keys.Sort();
         }
@@ -103,8 +156,8 @@ namespace OrionServer.Utilities
             lines.Add("{");
             lines.Add("\t\"keys\": [");
             for (int i = 0; i < _keys.Count - 1; i++)
-                lines.Add($"\t\t\"{_keys[i]}\",");
-            lines.Add($"\t\t\"{_keys[_keys.Count - 1]}\"\n\t]");
+                lines.Add($"\t\t\"{_keys[i].Item1}\",");
+            lines.Add($"\t\t\"{_keys[_keys.Count - 1].Item1}\"\n\t]");
             lines.Add("}");
 
             File.WriteAllLines(
@@ -114,9 +167,9 @@ namespace OrionServer.Utilities
             );
         }
 
-        internal static List<string> GetAllKeys()
+        internal static List<TripleValue<string, string, DateTime>> GetAllKeys()
         {
-            return new List<string>(_keys);
+            return new List<TripleValue<string, string, DateTime>>(_keys);
         }
     }
 }
