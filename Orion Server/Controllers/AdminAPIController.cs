@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,7 +24,7 @@ namespace OrionServer.Controllers
     public class AdminAPIController : ControllerBase
     {
         private readonly ILogger<AdminAPIController> _logger;
-        private static Utilities.AsyncO _writer;
+        private static Utilities.AsyncO? _writer = null;
 
         private Dictionary<string, Func<string, string>> response = new Dictionary<string, Func<string, string>>()
         {
@@ -34,7 +36,8 @@ namespace OrionServer.Controllers
         public AdminAPIController(ILogger<AdminAPIController> logger)
         {
             _logger = logger;
-            _writer = new Utilities.AsyncO(new StreamWriter($"{Constants.DataFolder}/admin.dat"));
+            if (_writer != null)
+                _writer = new Utilities.AsyncO(new StreamWriter($"{Constants.DataFolder}/admin.dat"));
         }
 
         [HttpPost]
@@ -49,7 +52,8 @@ namespace OrionServer.Controllers
                 }
                 else
                 {
-                    await _writer.WriteLine($"+ {JsonConvert.SerializeObject(requestData)}");
+                    if (_writer != null)
+                        await _writer.WriteLine($"+ {JsonConvert.SerializeObject(requestData)}");
                     returnVal = response[requestData.requestID](requestData.requestData);
                 }
             }

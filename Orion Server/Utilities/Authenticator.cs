@@ -86,23 +86,13 @@ namespace OrionServer.Utilities
         /// <returns>Index of the key in the list</returns>
         private static int FindIndexOfKey(string key)
         {
-            int min = 0;
-            int max = _keys.Count - 1;
-
-            while (min <= max)
+            for (int i = 0; i < _keys.Count; i++)
             {
-                int mid = (min + max) / 2;
-
-                int comparison = string.Compare(_keys[mid].Item1, key);
-                if (comparison == 0)
+                if (_keys[i].Item1 == key)
                 {
-                    _keys[mid].Item3 = DateTime.Now;
-                    return mid;
+                    _keys[i].Item3 = DateTime.Now;
+                    return i;
                 }
-                else if (comparison > 0)
-                    min = mid + 1;
-                else
-                    max = mid - 1;
             }
             return -1;
         }
@@ -126,6 +116,9 @@ namespace OrionServer.Utilities
         {
             if (FindIndexOfKey(key) >= 0)
                 _keys.RemoveAt(FindIndexOfKey(key));
+
+            RemoveDuplicateKeys();
+            SaveKeys();
         }
 
         /// <summary>
