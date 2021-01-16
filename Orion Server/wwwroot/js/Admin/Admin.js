@@ -1,9 +1,14 @@
 var homeBtn;
+
 var authenticationKeyBtn;
 var reloadAuthenticationKeysBtn;
 var authenticationKeysTable;
 var authenticationKeyInput;
 var authenticationKeyInputBtn;
+
+var moduleBtn;
+var reloadModulesBtn;
+var moduleTable;
 
 /**
  * Hides all child elements of pages div
@@ -23,6 +28,7 @@ function Show(pageName)
     $('#' + pageName + '-Page').show();
     $('#' + pageName + '-Page').css('height', 'auto');
 }
+
 
 function AddKey(key) {
     var settings = {
@@ -79,7 +85,8 @@ function ReloadKeys()
     };
       
     $.ajax(settings)
-        .done(function (response) {
+        .done(function (response)
+        {
             response = JSON.parse(response);
             var tableHTML = '<table class="table"><thead><th scope="col">Key</th><th scope="col">Last Active</th><th scope="col">Action</th></thead><tbody>';
             for (var i = 0; i < response.length; i++)
@@ -91,6 +98,66 @@ function ReloadKeys()
         });
 }
 
+
+function ReloadModules()
+{
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"getAllModules","requestData":""}',
+    }
+
+    $.ajax(settings)
+        .done(function (response)
+        {
+            response = JSON.parse(response);
+            console.log(response);
+            var tableHTML = '<table class="table"><thead><th scope="col">Module ID</th><th scope="col">Module Name</th><th scope="col">Actions</th></thead><tbody>';
+            for (var i = 0; i < response.length; i++)
+                tableHTML += '<tr><th scope="row">' + response[i].Item1 + '</th><td>' + response[i].Item2 + '</td><td><button class="btn btn-danger" type="button" onclick="RemoveModule(\'' + response[i].Item2 + '\');">Remove Module</button></td></tr>';
+
+            tableHTML += '</tbody></table>';
+
+            moduleTable.innerHTML = tableHTML;
+        });
+}
+
+function UnLoadModule(moduleName)
+{
+
+}
+
+function LoadModule(moduleName)
+{
+
+}
+
+function RemoveModule(moduleName)
+{
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"deleteModule","requestData":"' + moduleName + '"}',
+    }
+
+    $.ajax(settings)
+        .done(function (response) {
+            response = JSON.parse(response);
+            console.log(response);
+            if (response.response)
+                window.location.reload();
+        });
+}
+
+
 $(function()
 {
     authenticationKeyBtn = document.getElementById('authenticationKeyBtn');
@@ -99,11 +166,20 @@ $(function()
     authenticationKeyInput = document.getElementById('authenticationKeyInput');
     authenticationKeyInputBtn = document.getElementById('authenticationKeyInputBtn');
 
+    moduleBtn = document.getElementById('moduleBtn');
+    reloadModulesBtn = document.getElementById('reloadModules');
+    moduleTable = document.getElementById('moduleTable');
+
     $('#pages').children().css('height', '0');
 
-    authenticationKeyBtn.onclick = function() { Show('Authentication'); }
+    authenticationKeyBtn.onclick = function () { Show('Authentication'); }
+    moduleBtn.onclick = function () { Show('Module'); }
+
     reloadAuthenticationKeysBtn.onclick = ReloadKeys;
     authenticationKeyInputBtn.onclick = function () { AddKey(authenticationKeyInput.value); }
+
+    reloadModulesBtn.onclick = ReloadModules;
+
     HideEverything();
 
     authenticationKeyInput.addEventListener('keyup', function (e) {
@@ -114,6 +190,7 @@ $(function()
     });
 
     ReloadKeys();
+    ReloadModules();
 
     setInterval(ReloadKeys, 5000);
 })

@@ -19,13 +19,29 @@ namespace OrionServer.Utilities
             List<string> assemblies = new();
             string[] directories = Directory.GetDirectories(Constants.ModulesFolder);
 
+            int modulesFolderNameSize = Constants.ModulesFolder.Length;
+
             foreach (string directory in directories)
             {
-                if (AssemblyExists(directory))
-                    assemblies.Add(directory);
+                string name = directory.Substring(modulesFolderNameSize + 1);
+                if (AssemblyExists(name))
+                    assemblies.Add(name);
             }
 
             return assemblies.ToArray();
+        }
+
+        public static bool AssemblyRemove(string name)
+        {
+            try
+            {
+                Directory.Delete($"{Constants.ModulesFolder}/{name}", true);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool AssemblyExists(string name)
@@ -36,7 +52,11 @@ namespace OrionServer.Utilities
         private void LoadAssembly()
         {
             _assembly = Assembly.LoadFile($"{Constants.ModulesFolder}/{_moduleName}/{_moduleName}.dll");
+            if (_assembly == null)
+                throw new Exception($"Assembly \"{_moduleName}\" can not be loaded");
             _mainType = _assembly.GetType(_moduleName, true, false);
+            if (_mainType == null)
+                throw new Exception($"Assembly must have a class named as the module name");
             _handle = Activator.CreateInstance(_mainType);
         }
 
@@ -45,6 +65,7 @@ namespace OrionServer.Utilities
         private Type _mainType;
         private object? _handle;
         private Dictionary<string, MethodInfo> _methods = new();
+
         public AssemblyLoader(string name)
         {
             if (!AssemblyExists(name))
@@ -55,10 +76,10 @@ namespace OrionServer.Utilities
 
         public void Run(string name, object[] arguments)
         {
-            if (_handle == null)
+            if (_handle == null || _mainType == null)
                 throw new Exception($"Assembly \"{_moduleName}\" did not load properly");
             
-            MethodInfo func = null;
+            MethodInfo func;
             
             try
             {
@@ -67,8 +88,17 @@ namespace OrionServer.Utilities
             catch
             {
                 func = _mainType.GetMethod(name);
+                if (func == null)
+                    throw new Exception($"Assembly \"{_moduleName}\" did not include method \"{name}\"");
                 _methods.Add(name, func);
             }
+
+            func.Invoke(_handle, arguments);
+        }
+
+        ~AssemblyLoader()
+        {
+            _assembly = null;
         }
     }
 }

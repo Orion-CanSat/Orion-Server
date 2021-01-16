@@ -4,6 +4,7 @@ namespace OrionServer
     {
         public static string WWWDataFolder = "wwwdata";
         public static string DataFolder = $"{WWWDataFolder}/data";
+        public static string ModulesFolder = $"{WWWDataFolder}/modules";
         public static string AuthenticationKeysFile = $"{Constants.WWWDataFolder}/authenticationKeys.json";
     }
 }
