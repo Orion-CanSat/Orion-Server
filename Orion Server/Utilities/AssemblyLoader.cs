@@ -74,7 +74,7 @@ namespace OrionServer.Utilities
             _moduleName = name;
         }
 
-        public void Run(string name, object[] arguments)
+        public string Run(string name, object[] arguments)
         {
             if (_handle == null || _mainType == null)
                 throw new Exception($"Assembly \"{_moduleName}\" did not load properly");
@@ -93,7 +93,7 @@ namespace OrionServer.Utilities
                 _methods.Add(name, func);
             }
 
-            func.Invoke(_handle, arguments);
+            return (string)func.Invoke(_handle, arguments);
         }
 
         ~AssemblyLoader()

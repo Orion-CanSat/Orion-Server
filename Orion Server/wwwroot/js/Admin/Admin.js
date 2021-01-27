@@ -118,7 +118,7 @@ function ReloadModules()
             console.log(response);
             var tableHTML = '<table class="table"><thead><th scope="col">Module ID</th><th scope="col">Module Name</th><th scope="col">Actions</th></thead><tbody>';
             for (var i = 0; i < response.length; i++)
-                tableHTML += '<tr><th scope="row">' + response[i].Item1 + '</th><td>' + response[i].Item2 + '</td><td><button class="btn btn-danger" type="button" onclick="RemoveModule(\'' + response[i].Item2 + '\');">Remove Module</button></td></tr>';
+                tableHTML += '<tr><th scope="row">' + response[i].Item1 + '</th><td>' + response[i].Item2 + '</td><td>' + ((response[i].Item3) ? '<button class="btn btn-primary" type="button" onclick="UnloadModule(\'' + response[i].Item2 + '\');">Unload Module</button>' : '<button class="btn btn-success" type="button" onclick="LoadModule(\'' + response[i].Item2 + '\');">Load Module</button>') + '<button class="btn btn-danger" type="button" onclick="RemoveModule(\'' + response[i].Item2 + '\');">Remove Module</button></td></tr>';
 
             tableHTML += '</tbody></table>';
 
@@ -126,14 +126,46 @@ function ReloadModules()
         });
 }
 
-function UnLoadModule(moduleName)
+function UnloadModule(moduleName)
 {
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"unloadModule","requestData":"' + moduleName + '"}',
+    }
 
+    $.ajax(settings)
+        .done(function (response) {
+            response = JSON.parse(response);
+            console.log(response);
+            if (response.response)
+                window.location.reload();
+        });
 }
 
 function LoadModule(moduleName)
 {
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"loadModule","requestData":"' + moduleName + '"}',
+    }
 
+    $.ajax(settings)
+        .done(function (response) {
+            response = JSON.parse(response);
+            console.log(response);
+            if (response.response)
+                window.location.reload();
+        });
 }
 
 function RemoveModule(moduleName)
