@@ -10,21 +10,9 @@ using Newtonsoft.Json.Linq;
 
 namespace OrionServer.Utilities
 {
-    public class TripleValue<T1, T2, T3>
-    {
-        public TripleValue(T1 Item1, T2 Item2, T3 Item3) 
-        {
-            this.Item1 = Item1;
-            this.Item2 = Item2;
-            this.Item3 = Item3;
-        }
-        public T1 Item1 { get; set; }
-        public T2 Item2 { get; set; }
-        public T3 Item3 { get; set; }
-    }
     public class Authenticator
     {
-        private static readonly List<TripleValue<string, string, DateTime>> _keys = new();
+        private static readonly List<Triple<string, string, DateTime>> _keys = new();
 
         /// <summary>
         /// Loads all keys from AuthenticationKeys file in WWWData
@@ -38,7 +26,7 @@ namespace OrionServer.Utilities
                 JToken tokens = JsonConvert.DeserializeObject<JToken>(fileContent);
                 string[] keys = tokens.SelectToken("keys").ToObject<string[]>();
                 foreach (string key in keys)
-                    _keys.Add(new TripleValue<string, string, DateTime>(key, "", new DateTime()));
+                    _keys.Add(new Triple<string, string, DateTime>(key, "", new DateTime()));
                 RemoveDuplicateKeys();
                 SaveKeys();
             }
@@ -103,7 +91,7 @@ namespace OrionServer.Utilities
         /// <param name="key">Key to be authorized</param>
         public static void AuthorizeKey(string key)
         {
-            _keys.Add(new TripleValue<string, string, DateTime>(key, "", new DateTime()));
+            _keys.Add(new Triple<string, string, DateTime>(key, "", new DateTime()));
             RemoveDuplicateKeys();
             SaveKeys();
         }
@@ -133,7 +121,7 @@ namespace OrionServer.Utilities
 
             _keys.Clear();
             foreach (string key in keys)
-                _keys.Add(new TripleValue<string, string, DateTime>(key, "", new DateTime()));
+                _keys.Add(new Triple<string, string, DateTime>(key, "", new DateTime()));
 
             _keys.Sort();
         }
@@ -160,9 +148,9 @@ namespace OrionServer.Utilities
             );
         }
 
-        internal static List<TripleValue<string, string, DateTime>> GetAllKeys()
+        internal static List<Triple<string, string, DateTime>> GetAllKeys()
         {
-            return new List<TripleValue<string, string, DateTime>>(_keys);
+            return new List<Triple<string, string, DateTime>>(_keys);
         }
     }
 }

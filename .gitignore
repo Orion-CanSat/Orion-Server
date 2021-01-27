@@ -353,3 +353,5 @@ MigrationBackup/
 # Orion Server Authentication Keys
 authenticationKeys.json
 *.dat
+
+.idea/

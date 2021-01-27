@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrionServer.Utilities;
 
 namespace OrionServer.Controllers
 {
@@ -58,7 +59,7 @@ namespace OrionServer.Controllers
                 }
                 catch 
                 {
-                    return $"{{\"response\": false}}";
+                    return "false";
                 }
             } }
         };        
@@ -71,20 +72,22 @@ namespace OrionServer.Controllers
         }
 
         [HttpPost]
-        public async Task<string> Post([FromBody] Request requestData)
+        public async Task<Response> Post([FromBody] Request requestData)
         {
-            string returnVal = "{\"response\": false}";
+            Response returnVal = new Response();
 
             try
-            {
-
-            }
-            catch
             {
                 if (_writer != null)
                     await _writer.WriteLine($"Unable to parse {JsonConvert.SerializeObject(requestData)}");
 
-                returnVal = response[requestData.requestID](requestData.requestData, Utilities.Authenticator.IsAuthorizedKey(requestData.authenticationID));
+                returnVal.Error = false;
+                returnVal.ResponseData = response[requestData.requestID](requestData.requestData, Utilities.Authenticator.IsAuthorizedKey(requestData.authenticationID));
+            }
+            catch
+            {
+                returnVal.Error = true;
+                returnVal.ErrorMessage = "Unexpected error";
             }
 
             return returnVal;

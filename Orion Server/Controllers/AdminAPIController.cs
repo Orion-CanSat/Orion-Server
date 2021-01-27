@@ -11,15 +11,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using OrionServer.Utilities;
+
 namespace OrionServer.Controllers
 {
-    public class AdminRequest
-    {
-        public string authenticationID { get; set; }
-        public string requestID { get; set; }
-        public string requestData { get; set; }
-    }
-
     [ApiController]
     [Route("api/[controller]")]
     public class AdminAPIController : ControllerBase
@@ -27,11 +22,11 @@ namespace OrionServer.Controllers
         private readonly ILogger<AdminAPIController> _logger;
         private static Utilities.AsyncO? _writer = null;
 
-        private Dictionary<string, Func<string, string>> response = new Dictionary<string, Func<string, string>>()
+        private Dictionary<string, Func<string, object>> response = new Dictionary<string, Func<string, object>>()
         {
             { "getAllKeys", (string param) => { return JsonConvert.SerializeObject(Utilities.Authenticator.GetAllKeys()); }},
-            { "addKey", (string param) => { Utilities.Authenticator.AuthorizeKey(param); return $"{{\"response\": true }}"; } },
-            { "removeKey", (string param) => { Utilities.Authenticator.RemoveKey(param); return "{\"response\": true}"; } },
+            { "addKey", (string param) => { Utilities.Authenticator.AuthorizeKey(param); return "true"; } },
+            { "removeKey", (string param) => { Utilities.Authenticator.RemoveKey(param); return "true"; } },
             { "getAllModules", (string param) => {
                 string[] modulesName = Utilities.AssemblyLoader.GetAssemblies();
                 List<Tuple<string, string, bool>> modulesNameWithHashAndLoaded = new();
@@ -43,28 +38,28 @@ namespace OrionServer.Controllers
             } },
             { "loadModule", (string param) => {
                 if (ModuleAPIController._loadedAssemblies.ContainsKey(param))
-                    return $"{{\"response\": true }}";
+                    return "true";
                 else
                 {
                     try
                     {
                         Utilities.AssemblyLoader al = new Utilities.AssemblyLoader(param);
                         ModuleAPIController._loadedAssemblies.Add(param, new Utilities.Pair<bool, Utilities.AssemblyLoader>(true, al));
-                        return $"{{\"response\": true }}";
+                        return "true";
                     }
                     catch
                     {
-                        return $"{{\"response\": false }}";
+                        return "false";
                     }
                 }
             } },
             { "unloadModule", (string param) => {
                 if (!ModuleAPIController._loadedAssemblies.ContainsKey(param))
-                    return $"{{\"response\": true }}";
+                    return "true";
                 ModuleAPIController._loadedAssemblies.Remove(param);
-                return $"{{\"response\": true }}";
+                return "true";
             } },
-            { "deleteModule", (string param) => { return $"{{\"response\": " + ((Utilities.AssemblyLoader.AssemblyRemove(param)) ? "true" : "false") + " }"; } }
+            { "deleteModule", (string param) => { return ((Utilities.AssemblyLoader.AssemblyRemove(param)) ? "true" : "false"); } }
         };
 
         public AdminAPIController(ILogger<AdminAPIController> logger)
@@ -75,23 +70,30 @@ namespace OrionServer.Controllers
         }
 
         [HttpPost]
-        public async Task<string> Post([FromBody] AdminRequest requestData)
+        public async Task<Response> Post([FromBody] Request requestData)
         {
-            string returnVal = "{\"response\": false}";
+            Response returnVal = new Response();
             try
             {
                 if (!Utilities.Authenticator.IsAuthorizedKey(requestData.authenticationID))
                 {
-                    returnVal = "{\"response\": false, \"responseMessage\": \"Unauthorized User\"}";
+                    returnVal.Error = true;
+                    returnVal.ErrorMessage = "Unauthorized User";
                 }
                 else
                 {
                     if (_writer != null)
                         await _writer.WriteLine($"+ {JsonConvert.SerializeObject(requestData)}");
-                    returnVal = response[requestData.requestID](requestData.requestData);
+                    returnVal.Error = false;
+                    returnVal.ResponseData = response[requestData.requestID](requestData.requestData).ToString();
                 }
             }
-            catch { }
+            catch
+            {
+                returnVal.Error = true;
+                returnVal.ErrorMessage = "Unexpected error";
+            }
+
             return returnVal;
         }
     }

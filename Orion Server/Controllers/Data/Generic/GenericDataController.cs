@@ -38,23 +38,32 @@ namespace OrionServer.Controllers.Data.Generic
         }
 
         [HttpPost]
-        public async Task<string> Post([FromHeader] string authenticationKey, [FromBody] T requestData)
+        public async Task<Utilities.Response> Post([FromBody] Utilities.Request request)
         {
-            string returnVal = "{\"response\": false}";
+            Utilities.Response returnVal = new Utilities.Response();
             try
             {
-                if (!Utilities.Authenticator.IsAuthorizedKey(authenticationKey))
+                if (!Utilities.Authenticator.IsAuthorizedKey(request.AuthenticationID))
                 {
-                    returnVal = "{\"response\": false, \"responseMessage\": \"Unauthorized User\"}";
+                    returnVal.Error = true;
+                    returnVal.ErrorMessage = "Unauthorized User";
                 }
                 else
                 {
-                    await _writer.WriteLine($"+ {JsonConvert.SerializeObject(requestData)}");
-                    _data.Add(requestData);
-                    returnVal = "{\"response\": true}";
+                    await _writer.WriteLine($"+ {JsonConvert.SerializeObject(request.RequestData)}");
+                    Console.WriteLine(request.RequestData);
+                    _data.Add(JsonConvert.DeserializeObject<T>(request.RequestData));
+
+                    returnVal.Error = false;
+                    returnVal.ResponseData = "true";
                 }
             }
-            catch { }
+            catch
+            {
+                returnVal.Error = true;
+                returnVal.ErrorMessage = "Unexpected error";
+            }
+            
             return returnVal;
         }
     }

@@ -30,7 +30,7 @@ function Show(pageName)
 }
 
 
-function AddKey(key) {
+async function AddKey(key) {
     var settings = {
         "url": "../api/adminapi",
         "method": "POST",
@@ -38,20 +38,19 @@ function AddKey(key) {
         "headers": {
             "Content-Type": "application/json"
         },
-        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"addKey","requestData":"' + key + '"}',
+        "data": {
+            "AuthenticationID": authenticationKey,
+            "RequestID": "addKey",
+            "RequestData": key
+        }
     };
 
-    $.ajax(settings)
-        .done(function (response) {
-            response = JSON.parse(response);
-
-            ReloadKeys();
-
-            authenticationKeyInput.value = '';
-        });
+    const response = await GetData(settings, true);
+    ReloadKeys();
+    authenticationKeyInput.value = '';
 }
 
-function RemoveKey(key)
+async function RemoveKey(key)
 {
     var settings = {
         "url": "../api/adminapi",
@@ -60,19 +59,19 @@ function RemoveKey(key)
         "headers": {
           "Content-Type": "application/json"
         },
-        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"removeKey","requestData":"' + key + '"}',
+        "data": {
+            "AuthenticationID": authenticationKey,
+            "RequestID": "removeKey",
+            "RequestData": key
+        }
     };
 
-    $.ajax(settings)
-        .done(function (response)
-        {
-            response = JSON.parse(response);
-            if (response.response)
-                ReloadKeys();
-        });
+    const response = await GetData(settings, true);
+    if (response)
+        ReloadKeys();
 }
 
-function ReloadKeys()
+async function ReloadKeys()
 {
     var settings = {
         "url": "../api/adminapi",
@@ -81,25 +80,25 @@ function ReloadKeys()
         "headers": {
           "Content-Type": "application/json"
         },
-        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"getAllKeys","requestData":""}',
+        "data": {
+            "AuthenticationID": authenticationKey,
+            "RequestID": "getAllKeys",
+            "RequestData": ""
+        }
     };
-      
-    $.ajax(settings)
-        .done(function (response)
-        {
-            response = JSON.parse(response);
-            var tableHTML = '<table class="table"><thead><th scope="col">Key</th><th scope="col">Last Active</th><th scope="col">Action</th></thead><tbody>';
-            for (var i = 0; i < response.length; i++)
-                tableHTML += '<tr><th scope="row">' + response[i].Item1 + '</th><td>' + (((new Date() - new Date(response[i].Item3)) < 7 * 1000) ? '🟢 Active' : '🔴 Inactive') + '</td><td><button class="btn btn-danger" type="button" onclick="RemoveKey(\'' + response[i].Item1 + '\');">Remove Key</button></td></tr>';
+    
+    const response = await GetData(settings, true);
+    var tableHTML = '<table class="table"><thead><th scope="col">Key</th><th scope="col">Last Active</th><th scope="col">Action</th></thead><tbody>';
+    for (var i = 0; i < response.length; i++)
+        tableHTML += '<tr><th scope="row">' + response[i].Item1 + '</th><td>' + (((new Date() - new Date(response[i].Item3)) < 7 * 1000) ? '🟢 Active' : '🔴 Inactive') + '</td><td><button class="btn btn-danger" type="button" onclick="RemoveKey(\'' + response[i].Item1 + '\');">Remove Key</button></td></tr>';
 
-            tableHTML += '</tbody></table>';
+    tableHTML += '</tbody></table>';
 
-            authenticationKeysTable.innerHTML = tableHTML;
-        });
+    authenticationKeysTable.innerHTML = tableHTML;
 }
 
 
-function ReloadModules()
+async function ReloadModules()
 {
     var settings = {
         "url": "../api/adminapi",
@@ -108,22 +107,22 @@ function ReloadModules()
         "headers": {
             "Content-Type": "application/json"
         },
-        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"getAllModules","requestData":""}',
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "getAllModules",
+            "requestData": ""
+        }
     }
 
-    $.ajax(settings)
-        .done(function (response)
-        {
-            response = JSON.parse(response);
-            console.log(response);
-            var tableHTML = '<table class="table"><thead><th scope="col">Module ID</th><th scope="col">Module Name</th><th scope="col">Actions</th></thead><tbody>';
-            for (var i = 0; i < response.length; i++)
+    const response = await GetData(settings, true);
+    console.log(response);
+    var tableHTML = '<table class="table"><thead><th scope="col">Module ID</th><th scope="col">Module Name</th><th scope="col">Actions</th></thead><tbody>';
+    for (var i = 0; i < response.length; i++)
                 tableHTML += '<tr><th scope="row">' + response[i].Item1 + '</th><td>' + response[i].Item2 + '</td><td>' + ((response[i].Item3) ? '<button class="btn btn-primary" type="button" onclick="UnloadModule(\'' + response[i].Item2 + '\');">Unload Module</button>' : '<button class="btn btn-success" type="button" onclick="LoadModule(\'' + response[i].Item2 + '\');">Load Module</button>') + '<button class="btn btn-danger" type="button" onclick="RemoveModule(\'' + response[i].Item2 + '\');">Remove Module</button></td></tr>';
 
-            tableHTML += '</tbody></table>';
+    tableHTML += '</tbody></table>';
 
-            moduleTable.innerHTML = tableHTML;
-        });
+    moduleTable.innerHTML = tableHTML;
 }
 
 function UnloadModule(moduleName)
@@ -168,7 +167,7 @@ function LoadModule(moduleName)
         });
 }
 
-function RemoveModule(moduleName)
+async function RemoveModule(moduleName)
 {
     var settings = {
         "url": "../api/adminapi",
@@ -177,16 +176,16 @@ function RemoveModule(moduleName)
         "headers": {
             "Content-Type": "application/json"
         },
-        "data": '{"authenticationID":"' + authenticationKey + '","requestID":"deleteModule","requestData":"' + moduleName + '"}',
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "deleteModule",
+            "requestData": moduleName
+        }
     }
 
-    $.ajax(settings)
-        .done(function (response) {
-            response = JSON.parse(response);
-            console.log(response);
-            if (response.response)
-                window.location.reload();
-        });
+    const response = await GetData(settings, true);
+    if (response)
+        window.location.reload();
 }
 
 
@@ -215,7 +214,7 @@ $(function()
     HideEverything();
 
     authenticationKeyInput.addEventListener('keyup', function (e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             event.preventDefault();
             authenticationKeyInputBtn.click();
         }
