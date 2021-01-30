@@ -355,7 +355,8 @@ authenticationKeys.json
 *.dat
 
 # Libs
-Orion Server/wwwroot/lib/
+*/wwwroot/lib/
+*/wwwdata/errors/
 
 # Rider files
 .idea/

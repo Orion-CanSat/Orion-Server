@@ -109,6 +109,25 @@ namespace OrionServer
                 }
             }
 
+            // Checks if pages folder exists and if it does not it creates it.
+            {
+                try
+                {
+                    if (!Directory.Exists(Constants.ErrorSubmitions))
+                        Directory.CreateDirectory(Constants.ErrorSubmitions);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Utilities.ExceptionConsoleWriter<UnauthorizedAccessException>
+                        .ShowException(e, "Orion Server does not have the right permission to create a wwwdata folder.", true, 1);
+                }
+                catch (Exception e)
+                {
+                    Utilities.ExceptionConsoleWriter<Exception>
+                        .ShowException(e, "Orion Server encountered a fatal exception while trying to create wwwdata folder.", true, 1);
+                }
+            }
+
             // Checks if previous authentication keys are still present and deletes them.
             // Then if creates new ones.
             {
