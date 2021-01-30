@@ -281,8 +281,6 @@ async function SavePageFromEditor()
     var response = await GetData(settings, true);
     if (response != true)
         console.log('Error saving page');
-    else
-        location.reload();
 }
 
 $(function()

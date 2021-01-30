@@ -65,11 +65,16 @@
         <br />
         <div class="my-editor"></div>
         <br />
-        <button class="btn btn-primary" onclick="SavePageFromEditor()">Save Page</button>
-        <br />
-        <div>
-            <input id="newPageNameInput" type="text" class="form-control" placeholder="Page Name">
-            <button class="btn btn-success" onclick="CreatePage(document.getElementById('newPageNameInput').value)">Create Page</button>
+        <div class="container">
+            <div class="row">
+                <button class="btn btn-primary col-12" onclick="SavePageFromEditor()">Save Page</button>
+            </div>
+            <br />
+            <div class="row">
+                <input id="newPageNameInput" type="text" class="form-control col-8" placeholder="Page Name">
+                <div class="col-1"></div>
+                <button class="btn btn-success col-3" onclick="CreatePage(document.getElementById('newPageNameInput').value)">Create Page</button>
+            </div>
         </div>
     </div>
 </div>

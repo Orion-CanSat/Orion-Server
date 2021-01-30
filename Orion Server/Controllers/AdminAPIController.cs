@@ -24,7 +24,7 @@ namespace OrionServer.Controllers
 
         private Dictionary<string, Func<string, object>> response = new Dictionary<string, Func<string, object>>()
         {
-            { "getAllKeys", (string param) => { return JsonConvert.SerializeObject(Utilities.Authenticator.GetAllKeys(), new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter()); }},
+            { "getAllKeys", (string param) => JsonConvert.SerializeObject(Utilities.Authenticator.GetAllKeys(), new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter()) },
             { "addKey", (string param) => { Utilities.Authenticator.AuthorizeKey(param); return "true"; } },
             { "removeKey", (string param) => { Utilities.Authenticator.RemoveKey(param); return "true"; } },
             { "getAllModules", (string param) =>
@@ -64,8 +64,8 @@ namespace OrionServer.Controllers
                     ModuleAPIController._loadedAssemblies.Remove(param);
                     return "true";
                 } },
-            { "deleteModule", (string param) => { return ((Utilities.AssemblyLoader.AssemblyRemove(param)) ? "true" : "false"); } },
-            { "getPage", (string param) => { Console.WriteLine(param); return OrionServer.Data.Pages.pages[param]; } },
+            { "deleteModule", (string param) => ((Utilities.AssemblyLoader.AssemblyRemove(param)) ? "true" : "false") },
+            { "getPage", (string param) => OrionServer.Data.Pages.pages[param] },
             { "setPage", (string param) =>
                 {
                     JObject? data = (JObject?)JsonConvert.DeserializeObject(param);
@@ -78,6 +78,7 @@ namespace OrionServer.Controllers
                     try
                     {
                         OrionServer.Data.Pages.pages[pageName] = pageContent;
+                        OrionServer.Data.Pages.SavePages();
                         return "true";
                     }
                     catch
@@ -88,6 +89,8 @@ namespace OrionServer.Controllers
             },
             { "createPage", (string param) =>
                 {
+                    if (OrionServer.Data.Pages.pages.ContainsKey(param))
+                        return "false";
                     OrionServer.Data.Pages.pages.Add(param, "");
                     OrionServer.Data.Pages.SavePages();
                     return "true";

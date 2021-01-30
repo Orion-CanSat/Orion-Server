@@ -4,15 +4,27 @@
   "libraries": [
     {
       "library": "Chart.js@2.9.4",
-      "destination": "wwwroot/lib/Chart.js/",
-      "files": [
-        "Chart.min.js",
-        "Chart.min.css"
-      ]
+      "destination": "wwwroot/lib/Chart.js/"
     },
     {
       "library": "Trumbowyg@2.23.0",
       "destination": "wwwroot/lib/Trumbowyg/"
+    },
+    {
+      "library": "twitter-bootstrap@4.3.1",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "jquery@3.5.1",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jquery-validate@1.17.0",
+      "destination": "wwwroot/lib/jquery-validation/"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive"
     }
   ]
 }
