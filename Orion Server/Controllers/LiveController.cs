@@ -20,14 +20,34 @@ namespace OrionServer.Controllers
 
         public IActionResult Index(string id)
         {
-            string[] charts = id.Split('-');
-            List<string[]> chartsToShow = new List<string[]>();
-            for (int i = 0; i < charts.Length; i++)
-                chartsToShow.Add(charts[i].Split('_'));
+            try
+            {
+                List<List<Utilities.Pair<string, string>>> chartsToShow = new();
 
-            ViewBag.ChartsToShow = chartsToShow;
+                string[] individualCharts = id.Split('-');
+                foreach (string individualChart in individualCharts)
+                {
+                    List<Utilities.Pair<string, string>> chartElements = new();
 
-            return View(new LiveViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                    foreach (string chartGraph in individualChart.Split('_'))
+                    {
+                        Utilities.Pair<string, string> chartElement = new(chartGraph.Split('~')[0], chartGraph.Split('~')[1]);
+
+                        chartElements.Add(chartElement);
+                    }
+
+                    chartsToShow.Add(chartElements);
+                }
+
+
+                ViewBag.ChartsToShow = chartsToShow;
+
+                return View(new LiveViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+            catch
+            {
+                return Redirect("/Home/Error");
+            }
         }
     }
 }

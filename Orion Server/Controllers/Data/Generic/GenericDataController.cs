@@ -30,7 +30,7 @@ namespace OrionServer.Controllers.Data.Generic
             string returnVal = "{\"response\": false}";
             try
             {
-                returnVal = $"{{\"response\": true, \"responseData\": {JsonConvert.SerializeObject(_data[_data.Count - 1], new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter())}}}";
+                returnVal = $"{{\"response\": true, \"responseData\": {JsonConvert.SerializeObject(_data[_data.Count - 1])}}}";
             }
             catch { }
 
@@ -50,7 +50,7 @@ namespace OrionServer.Controllers.Data.Generic
                 }
                 else
                 {
-                    await _writer.WriteLine($"+ {JsonConvert.SerializeObject(request.RequestData, new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter())}");
+                    await _writer.WriteLine($"+ {JsonConvert.SerializeObject(request.RequestData)}");
                     Console.WriteLine(request.RequestData);
                     _data.Add(JsonConvert.DeserializeObject<T>(request.RequestData));
 

@@ -1,79 +1,116 @@
-﻿Object.defineProperty(String.prototype, 'hashCode', {
-    value: function () {
-        var hash = 0, i, chr;
-        for (i = 0; i < this.length; i++) {
-            chr = this.charCodeAt(i);
-            hash = ((hash << 5) - hash) + chr;
-            hash |= 0;
-        }
-        return hash;
+﻿Object.defineProperty(
+    String.prototype,
+    'hashCode',
+    {
+        value: function ()
+            {
+                var hash = 0, i, chr;
+                for (i = 0; i < this.length; i++) {
+                    chr = this.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + chr;
+                    hash |= 0;
+                }
+                return hash;
+            }
     }
-});
+);
 
-var charts = [];
-var chartNameToJSONResponseValue = {
-    'temperature': 'TemperatureC',
-    'pressure': 'PressurePa'
-};
+const chartContainer = document.getElementById('chart-container');
+var loadedCharts = [];
 
-/**
- * 
- * @param {string} chartName
- * @returns {CustomChart}
- */
-function LoadChart(chartName) {
-    var ctx = document.getElementById(chartName + '-Chart').getContext('2d');
-
-    var hashValue = chartName.hashCode();
-    var newChart = new CustomChart(
-        ctx,
-        ChartTypes.Line,
-        chartName.charAt(0).toUpperCase() + chartName.slice(1),
-        hashValue % 255,
-        (hashValue >> 8) % 255,
-        (hashValue >> 16) % 255);
-    return newChart;
-}
-
-function UpdateChart(chart) {
-    try {
+async function UpdateChart(chart)
+{
+    try
+    {
         fetch('/api/' + chart.name)
-            .then(function (respone) {
-                return respone.json();
+            .then(async function(response)
+            {
+                return response.json();
             })
-            .then(function (responseJSON) {
+            .then(function (responseJSON)
+            {
+                console.log(responseJSON);
                 if (!responseJSON.response)
                     return;
-                console.log(responseJSON);
-                console.log(chartNameToJSONResponseValue[chart.name]);
-                chart.chart.AddValue(0,
+
+                console.log(chart.name.charAt(0).toUpperCase() + chart.name.slice(1) + chart.chartUnit);
+                chart.chart.AddValue(
+                    chart.chartIndex,
                     responseJSON.responseData.Date.split('T').shift().split('-').reverse().join('/') + ' ' + responseJSON.responseData.Date.split('T')[1],
-                    responseJSON.responseData[chartNameToJSONResponseValue[chart.name]]);
-            });
+                    responseJSON.responseData[chart.name.charAt(0).toUpperCase() + chart.name.slice(1) + chart.chartUnit]
+                );
+            }
+            );
     }
-    catch { }
+    catch
+    {
+
+    }
 }
 
-$(function () {
-    var chartElements = $('.chart-container').children();
-    for (var i = 0; i < chartElements.length; i++) {
-        var chartElement = chartElements[i];
-        try {
-            var chartElementId = chartElement.id;
-            var chartElementName = chartElementId.split('-')[0];
-            console.log(chartElementName);
-            var chart = LoadChart(chartElementName);
-            charts.push({
-                name: chartElementName,
-                chart: chart
-            });
+$(function ()
+{
+    for (var i = 0; i < charts.length; i++)
+    {
+        var canva = document.createElement('canvas');
+        canva.style = 'width: 80%; padding-bottom: 5vh; padding-top: 5vh';
+
+        var hashValue = charts[i][0].Item1.hashCode();
+
+        var cc = new CustomChart(
+            canva,
+            ChartTypes.Line,
+            charts[i][0].Item1.charAt(0).toUpperCase() + charts[i][0].Item1.slice(1),
+            hashValue % 255,
+            (hashValue >> 8) % 255,
+            (hashValue >> 16) % 255
+        );
+
+        loadedCharts.push(
+            {
+                name: charts[i][0].Item1,
+                chart: cc,
+                chartIndex: 0,
+                chartUnit: charts[i][0].Item2
+            }
+        );
+
+        for (var j = 1; j < charts[i].length; j++)
+        {
+            hashValue = charts[i][j].Item1.hashCode();
+
+            cc.AddDataset(
+                charts[i][j].Item1.charAt(0).toUpperCase() + charts[i][j].Item1.slice(1),
+                hashValue % 255,
+                (hashValue >> 8) % 255,
+                (hashValue >> 16) % 255
+            );
+
+            loadedCharts.push(
+                {
+                    name: charts[i][j].Item1,
+                    chart: cc,
+                    chartIndex: j,
+                    chartUnit: charts[i][j].Item2
+                }
+            );
         }
-        catch { }
+
+        cc.Update();
+
+        chartContainer.appendChild(canva);
     }
 
-    setInterval(function () {
-        for (var i = 0; i < charts.length; i++) {
-            UpdateChart(charts[i]);
-        }
-    }, 1000);
-})
+
+    setInterval(function ()
+        {
+            for (var i = 0; i < loadedCharts.length; i++) {
+                try {
+                    UpdateChart(loadedCharts[i]);
+                }
+                catch { }
+            }
+    },
+        1000
+    );
+});

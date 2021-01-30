@@ -24,7 +24,7 @@ namespace OrionServer.Controllers
 
         private Dictionary<string, Func<string, object>> response = new Dictionary<string, Func<string, object>>()
         {
-            { "getAllKeys", (string param) => JsonConvert.SerializeObject(Utilities.Authenticator.GetAllKeys(), new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter()) },
+            { "getAllKeys", (string param) => JsonConvert.SerializeObject(Utilities.Authenticator.GetAllKeys()) },
             { "addKey", (string param) => { Utilities.Authenticator.AuthorizeKey(param); return "true"; } },
             { "removeKey", (string param) => { Utilities.Authenticator.RemoveKey(param); return "true"; } },
             { "getAllModules", (string param) =>
@@ -35,7 +35,7 @@ namespace OrionServer.Controllers
                     for (int i = 0; i < modulesName.Length; i++)
                         modulesNameWithHashAndLoaded.Add(new Tuple<string, string, bool>(Utilities.Crypto.MD5.CreateMD5(modulesName[i]).Substring(0, 10), modulesName[i], ModuleAPIController._loadedAssemblies.ContainsKey(modulesName[i])));
 
-                    return JsonConvert.SerializeObject(modulesNameWithHashAndLoaded, new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter());
+                    return JsonConvert.SerializeObject(modulesNameWithHashAndLoaded);
                 }
             },
             { "loadModule", (string param) =>
@@ -133,7 +133,7 @@ namespace OrionServer.Controllers
                 else
                 {
                     if (_writer != null)
-                        await _writer.WriteLine($"+ {JsonConvert.SerializeObject(requestData, new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter())}");
+                        await _writer.WriteLine($"+ {JsonConvert.SerializeObject(requestData)}");
                     returnVal.Error = false;
                     returnVal.ResponseData = response[requestData.RequestID](requestData.RequestData).ToString();
                 }

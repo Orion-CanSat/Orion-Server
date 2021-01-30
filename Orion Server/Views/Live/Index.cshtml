@@ -9,12 +9,9 @@
     <script type="text/javascript" src="~/js/Live/ChartLoader.js"></script>
 }
 
-<div class="chart-container">  
-    @{
-        List<string[]> chartsToShow = ViewBag.ChartsToShow;
-        for (int i = 0; i < chartsToShow.Count; i++)
-        {
-            <canvas id=@(@chartsToShow[i][0] + "-Chart")  style="width: 80%; padding-bottom: 5vh; padding-top: 5vh"></canvas>
-        }
-    }
+<div id="chart-container">
 </div>
+
+<script>
+    const charts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ChartsToShow));
+</script>

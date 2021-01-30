@@ -34,7 +34,7 @@ namespace OrionServer.Controllers
                         modules.Add(entry.Key);
                 }
 
-                return JsonConvert.SerializeObject(modules, new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter());
+                return JsonConvert.SerializeObject(modules);
             } },
             { "runModule", (string param, bool authorized) =>
             {
@@ -78,7 +78,7 @@ namespace OrionServer.Controllers
             try
             {
                 if (_writer != null)
-                    await _writer.WriteLine($"Unable to parse {JsonConvert.SerializeObject(requestData, new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter())}");
+                    await _writer.WriteLine($"Unable to parse {JsonConvert.SerializeObject(requestData)}");
 
                 returnVal.Error = false;
                 returnVal.ResponseData = response[requestData.RequestID](requestData.RequestData, Utilities.Authenticator.IsAuthorizedKey(requestData.AuthenticationID));
