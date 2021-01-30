@@ -354,4 +354,9 @@ MigrationBackup/
 authenticationKeys.json
 *.dat
 
+# Libs
+Orion Server/wwwroot/lib/
+
+# Rider files
 .idea/
+

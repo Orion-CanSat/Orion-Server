@@ -25,7 +25,7 @@ namespace OrionServer.Data
             string[] pageNames = Directory.GetFiles(Constants.PagesFolder);
 
             foreach (string pageName in pageNames)
-                File.Delete($"{Constants.PagesFolder}/{pageName}");
+                File.Delete($"{Constants.PagesFolder}/{Path.GetFileName(pageName)}");
 
             foreach (KeyValuePair<string, string> page in Pages.pages)
                 File.WriteAllText($"{Constants.PagesFolder}/{page.Key}", page.Value);

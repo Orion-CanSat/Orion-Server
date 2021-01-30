@@ -227,7 +227,12 @@ async function RemovePage(pageName)
             "requestData": pageName
         }
     }
-    $('.my-editor').trumbowyg('html', await GetData(settings, true));
+
+    var response = GetData(settings, true);
+    if (response != true)
+        console.log('Error saving page');
+    else
+        location.reload();
 }
 
 async function CreatePage(pageName)
@@ -246,7 +251,8 @@ async function CreatePage(pageName)
         }
     }
 
-    if (await GetData(settings, true) == true)
+    var response = await GetData(settings, true);
+    if (response == true)
         location.reload();
 }
 
@@ -272,8 +278,11 @@ async function SavePageFromEditor()
         }
     }
 
-    if (await GetData(settings, true) != true)
+    var response = await GetData(settings, true);
+    if (response != true)
         console.log('Error saving page');
+    else
+        location.reload();
 }
 
 $(function()
