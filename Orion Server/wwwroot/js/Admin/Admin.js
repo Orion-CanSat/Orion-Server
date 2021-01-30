@@ -10,6 +10,10 @@ var moduleBtn;
 var reloadModulesBtn;
 var moduleTable;
 
+var pagesBtn;
+var activePageEditing = '';
+var newPageNameInput;
+
 /**
  * Hides all child elements of pages div
  */
@@ -188,6 +192,89 @@ async function RemoveModule(moduleName)
         window.location.reload();
 }
 
+async function LoadPageToEditor(pageName)
+{
+    activePageEditing = pageName;
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "getPage",
+            "requestData": pageName
+        }
+    }
+    $('.my-editor').trumbowyg('html', await GetData(settings, true));
+}
+
+async function RemovePage(pageName)
+{
+    activePageEditing = pageName;
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "removePage",
+            "requestData": pageName
+        }
+    }
+    $('.my-editor').trumbowyg('html', await GetData(settings, true));
+}
+
+async function CreatePage(pageName)
+{
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "createPage",
+            "requestData": pageName
+        }
+    }
+
+    if (await GetData(settings, true) == true)
+        location.reload();
+}
+
+async function SavePageFromEditor()
+{
+    if (activePageEditing === '')
+        return;
+
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "setPage",
+            "requestData": JSON.stringify({
+                "pageName": activePageEditing,
+                "pageContent": $('.my-editor').trumbowyg('html')
+            })
+        }
+    }
+
+    if (await GetData(settings, true) != true)
+        console.log('Error saving page');
+}
 
 $(function()
 {
@@ -201,10 +288,53 @@ $(function()
     reloadModulesBtn = document.getElementById('reloadModules');
     moduleTable = document.getElementById('moduleTable');
 
+    pagesBtn = document.getElementById('pagesBtn');
+    newPageNameInput = document.getElementById('newPageNameInput');
+    $('.my-editor').trumbowyg({
+        lang: 'en',
+        fixedBtnPane: false,
+        fixedFullWidth: false,
+        autogrow: false,
+        autogrowOnEnter: false,
+        prefix: 'trumbowyg-',
+        tagClasses: {},
+        semantic: true,
+        semanticKeepAttributes: false,
+        resetCss: false,
+        removeformatPasted: false,
+        tabToIndent: false,
+        tagsToRemove: [],
+        tagsToKeep: ['hr', 'img', 'embed', 'iframe', 'input'],
+        btns: [
+            ['viewHTML'],
+            ['undo', 'redo'],// Only supported in Blink browsers
+            ['formatting'],
+            ['strong', 'em', 'del'],
+            ['superscript', 'subscript'],
+            ['link'],
+            ['insertImage'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+            ['removeformat'],
+            ['fullscreen']
+        ],
+        btnsDef: {},
+        changeActiveDropdownIcon: false,
+        inlineElementsSelector: 'a,abbr,acronym,b,caption,cite,code,col,dfn,dir,dt,dd,em,font,hr,i,kbd,li,q,span,strikeout,strong,sub,sup,u',
+        pasteHandlers: [],
+        plugins: {},
+        urlProtocol: false,
+        minimalLinks: false,
+        defaultLinkTarget: undefined
+});
+
+
     $('#pages').children().css('height', '0');
 
     authenticationKeyBtn.onclick = function () { Show('Authentication'); }
     moduleBtn.onclick = function () { Show('Module'); }
+    pagesBtn.onclick = function () { Show('Pages'); }
 
     reloadAuthenticationKeysBtn.onclick = ReloadKeys;
     authenticationKeyInputBtn.onclick = function () { AddKey(authenticationKeyInput.value); }
@@ -223,5 +353,5 @@ $(function()
     ReloadKeys();
     ReloadModules();
 
-    setInterval(ReloadKeys, 5000);
+    //setInterval(ReloadKeys, 5000);
 })

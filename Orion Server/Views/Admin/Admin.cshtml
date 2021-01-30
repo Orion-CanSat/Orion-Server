@@ -41,4 +41,35 @@
         </div>
         <div id="moduleTable" style="padding-top: 5vh; padding-bottom: 5vh"></div>
     </div>
+    <div id="Pages-Page">
+        <table class="table">
+            <thead>
+            <th scope="col">Name</th>
+            <th scope="col">Actions</th>
+            </thead>
+            <tbody>
+                @{
+                    foreach (KeyValuePair<string, string> page in ViewBag.Pages)
+                    {
+                        <tr>
+                            <th scope="row"> @Html.Raw(page.Key) </th>
+                            <td>
+                                <button class="btn btn-primary" onclick="LoadPageToEditor('@Html.Raw(page.Key)')">Edit Page</button>
+                                <button class="btn btn-danger" onclick="RemovePage('@Html.Raw(page.Key)')">Remove Page</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <br />
+        <div class="my-editor"></div>
+        <br />
+        <button class="btn btn-primary" onclick="SavePageFromEditor()">Save Page</button>
+        <br />
+        <div>
+            <input id="newPageNameInput" type="text" class="form-control" placeholder="Page Name">
+            <button class="btn btn-success" onclick="CreatePage(newPageNameInput.text)">Create Page</button>
+        </div>
+    </div>
 </div>

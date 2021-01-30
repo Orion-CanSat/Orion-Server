@@ -10,17 +10,11 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using OrionServer.Utilities;
 
 namespace OrionServer.Controllers
 {
-    public class Request
-    {
-        public string authenticationID { get; set; }
-        public string requestID { get; set; }
-        public string requestData { get; set; }
-    }
-
     [ApiController]
     [Route("api/[controller]")]
     public class ModuleAPIController : ControllerBase
@@ -40,16 +34,21 @@ namespace OrionServer.Controllers
                         modules.Add(entry.Key);
                 }
 
-                return JsonConvert.SerializeObject(modules);
+                return JsonConvert.SerializeObject(modules, new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter());
             } },
             { "runModule", (string param, bool authorized) =>
             {
                 try
                 {
-                    JObject data = (JObject)JsonConvert.DeserializeObject(param);
-                    string moduleName = data["moduleName"].Value<string>();
-                    string dataToRequest = data["dataToRequest"].Value<string>();
-                    string requestData = data["requestData"].Value<string>();
+                    JObject? data = (JObject?)JsonConvert.DeserializeObject(param);
+                    if (data == null)
+                        throw new Exception();
+                    string? moduleName = data["moduleName"]?.Value<string>();
+                    string? dataToRequest = data["dataToRequest"]?.Value<string>();
+                    string? requestData = data["requestData"]?.Value<string>();
+
+                    if (moduleName == null || dataToRequest == null || requestData == null)
+                        throw new Exception();
 
                     Utilities.Pair<bool, Utilities.AssemblyLoader> entry = _loadedAssemblies[moduleName];
                     if (entry.Item1 && !authorized)
@@ -79,10 +78,10 @@ namespace OrionServer.Controllers
             try
             {
                 if (_writer != null)
-                    await _writer.WriteLine($"Unable to parse {JsonConvert.SerializeObject(requestData)}");
+                    await _writer.WriteLine($"Unable to parse {JsonConvert.SerializeObject(requestData, new Newtonsoft.Json.Converters.JavaScriptDateTimeConverter())}");
 
                 returnVal.Error = false;
-                returnVal.ResponseData = response[requestData.requestID](requestData.requestData, Utilities.Authenticator.IsAuthorizedKey(requestData.authenticationID));
+                returnVal.ResponseData = response[requestData.RequestID](requestData.RequestData, Utilities.Authenticator.IsAuthorizedKey(requestData.AuthenticationID));
             }
             catch
             {

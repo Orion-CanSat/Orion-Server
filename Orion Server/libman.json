@@ -9,6 +9,10 @@
         "Chart.min.js",
         "Chart.min.css"
       ]
+    },
+    {
+      "library": "Trumbowyg@2.23.0",
+      "destination": "wwwroot/lib/Trumbowyg/"
     }
   ]
 }

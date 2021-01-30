@@ -13,10 +13,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwdata\" />
-  </ItemGroup>
 	
   <ItemGroup>
     <None Include="wwwdata\**">
