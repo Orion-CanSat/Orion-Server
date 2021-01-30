@@ -1,0 +1,80 @@
+@model AdminViewModel
+@{
+    ViewData["Title"] = "Admin Page";
+}
+
+@section scripts
+{
+    <script type="text/javascript" src="~/js/Admin/Admin.js"></script>
+    <script>const authenticationKey = "@Model.AuthenticationKey"; </script>
+}
+
+<div id="pages">
+    <div id="Index-Page">
+        <div class="text-center">
+            <h1 class="display-4">Welcome to Admin Panel of the Orion Live Server</h1>
+        </div>
+    </div>
+    <div id="Authentication-Page">
+        <div class="text-center" style="padding-bottom: 5vh">
+            <h1 class="display-4">Orion Authentication Page</h1>
+        </div>
+        <div class="text-center">
+            <button id="reloadAuthenticationKeys" class="btn btn-primary" style="top-padding: 5vh; bottom-padding: 5vh; width: 100%">Reload</button>
+        </div>
+        <div id="authenticationKeysTable" style="padding-top: 5vh; padding-bottom: 5vh"></div>
+        <div class="text-center">
+            <div class="input-group mb-3">
+                <input id="authenticationKeyInput" class="form-control" type="text" autocomplete="off" placeholder="Authentication Key" autofocus />
+                <div class="input-group-append">
+                    <button id="authenticationKeyInputBtn" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="Module-Page">
+        <div class="text-center" style="padding-bottom: 5vh">
+            <h1 class="display-4">Orion Module Page</h1>
+        </div>
+        <div class="text-center">
+            <button id="reloadModules" class="btn btn-primary" style="top-padding: 5vh; bottom-padding: 5vh; width: 100%">Reload Modules View</button>
+        </div>
+        <div id="moduleTable" style="padding-top: 5vh; padding-bottom: 5vh"></div>
+    </div>
+    <div id="Pages-Page">
+        <table class="table">
+            <thead>
+            <th scope="col">Name</th>
+            <th scope="col">Actions</th>
+            </thead>
+            <tbody>
+                @{
+                    foreach (KeyValuePair<string, string> page in ViewBag.Pages)
+                    {
+                        <tr>
+                            <th scope="row"> @Html.Raw(page.Key) </th>
+                            <td>
+                                <button class="btn btn-primary" onclick="LoadPageToEditor('@Html.Raw(page.Key)')">Edit Page</button>
+                                <button class="btn btn-danger" onclick="RemovePage('@Html.Raw(page.Key)')">Remove Page</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <br />
+        <div class="my-editor"></div>
+        <br />
+        <div class="container">
+            <div class="row">
+                <button class="btn btn-primary col-12" onclick="SavePageFromEditor()">Save Page</button>
+            </div>
+            <br />
+            <div class="row">
+                <input id="newPageNameInput" type="text" class="form-control col-8" placeholder="Page Name">
+                <div class="col-1"></div>
+                <button class="btn btn-success col-3" onclick="CreatePage(document.getElementById('newPageNameInput').value)">Create Page</button>
+            </div>
+        </div>
+    </div>
+</div>

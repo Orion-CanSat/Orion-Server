@@ -353,3 +353,10 @@ MigrationBackup/
 # Orion Server Authentication Keys
 authenticationKeys.json
 *.dat
+
+# Libs
+Orion Server/wwwroot/lib/
+
+# Rider files
+.idea/
+

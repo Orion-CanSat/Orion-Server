@@ -13,10 +13,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwdata\" />
-  </ItemGroup>
 	
   <ItemGroup>
     <None Include="wwwdata\**">
@@ -34,6 +30,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\" />
   </ItemGroup>
 
 </Project>

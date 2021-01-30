@@ -38,6 +38,25 @@ namespace OrionServer
                 }
             }
 
+            // Checks if modules folder exists and if it does not it creates it.
+            {
+                try
+                {
+                    if (!Directory.Exists(Constants.ModulesFolder))
+                        Directory.CreateDirectory(Constants.ModulesFolder);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Utilities.ExceptionConsoleWriter<UnauthorizedAccessException>
+                        .ShowException(e, "Orion Server does not have the right permission to create a modules folder.", true, 1);
+                }
+                catch (Exception e)
+                {
+                    Utilities.ExceptionConsoleWriter<Exception>
+                        .ShowException(e, "Orion Server encountered a fatal exception while trying to create modules folder.", true, 1);
+                }
+            }
+
             // Checks if data folder exists and if it does not it creates it.
             {
                 try
@@ -58,6 +77,25 @@ namespace OrionServer
                             }
                         }
                     }    
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Utilities.ExceptionConsoleWriter<UnauthorizedAccessException>
+                        .ShowException(e, "Orion Server does not have the right permission to create a wwwdata folder.", true, 1);
+                }
+                catch (Exception e)
+                {
+                    Utilities.ExceptionConsoleWriter<Exception>
+                        .ShowException(e, "Orion Server encountered a fatal exception while trying to create wwwdata folder.", true, 1);
+                }
+            }
+
+            // Checks if pages folder exists and if it does not it creates it.
+            {
+                try
+                {
+                    if (!Directory.Exists(Constants.PagesFolder))
+                        Directory.CreateDirectory(Constants.PagesFolder);
                 }
                 catch (UnauthorizedAccessException e)
                 {
@@ -121,6 +159,8 @@ namespace OrionServer
 
             // Load Authorized keys
             Utilities.Authenticator.LoadAuthenticationKeys();
+
+            Data.Pages.InitializePages();
         }
 
         public Startup(IConfiguration configuration)
@@ -171,7 +211,7 @@ namespace OrionServer
                     pattern: "api/{controller}/{dt?}");
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Pages}/{id=Index}");
             });
         }
     }

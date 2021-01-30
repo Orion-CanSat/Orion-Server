@@ -19,14 +19,18 @@ namespace OrionServer.Controllers
         }
 
         [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
-        public IActionResult Index()
+        public IActionResult Pages(string id)
         {
-            return View(new HomeViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public IActionResult Privacy()
-        {
-            return View(new HomeViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            try
+            {
+                ViewBag.Name = id;
+                ViewBag.Content = OrionServer.Data.Pages.pages[id];
+                return View(new HomeViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+            catch
+            {
+                return Redirect("/Home/Error");
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

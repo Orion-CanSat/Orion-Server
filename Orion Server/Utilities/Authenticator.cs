@@ -1,15 +1,18 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrionServer.Utilities
 {
     public class Authenticator
     {
-        private static readonly List<string> _keys = new();
+        private static readonly List<Triple<string, string, DateTime>> _keys = new();
 
         /// <summary>
         /// Loads all keys from AuthenticationKeys file in WWWData
@@ -23,7 +26,7 @@ namespace OrionServer.Utilities
                 JToken tokens = JsonConvert.DeserializeObject<JToken>(fileContent);
                 string[] keys = tokens.SelectToken("keys").ToObject<string[]>();
                 foreach (string key in keys)
-                    _keys.Add(key);
+                    _keys.Add(new Triple<string, string, DateTime>(key, "", new DateTime()));
                 RemoveDuplicateKeys();
                 SaveKeys();
             }
@@ -61,7 +64,25 @@ namespace OrionServer.Utilities
         /// <returns>Returns true if key is authorized</returns>
         public static bool IsAuthorizedKey(string key)
         {
-            return _keys.Contains(key);
+            return FindIndexOfKey(key) >= 0;
+        }
+
+        /// <summary>
+        /// Returns the index of the key given
+        /// </summary>
+        /// <param name="key">Key to remove</param>
+        /// <returns>Index of the key in the list</returns>
+        private static int FindIndexOfKey(string key)
+        {
+            for (int i = 0; i < _keys.Count; i++)
+            {
+                if (_keys[i].Item1 == key)
+                {
+                    _keys[i].Item3 = DateTime.Now;
+                    return i;
+                }
+            }
+            return -1;
         }
 
         /// <summary>
@@ -70,7 +91,20 @@ namespace OrionServer.Utilities
         /// <param name="key">Key to be authorized</param>
         public static void AuthorizeKey(string key)
         {
-            _keys.Add(key);
+            _keys.Add(new Triple<string, string, DateTime>(key, "", new DateTime()));
+            RemoveDuplicateKeys();
+            SaveKeys();
+        }
+
+        /// <summary>
+        /// Removed key
+        /// </summary>
+        /// <param name="key">Key to remove</param>
+        public static void RemoveKey(string key)
+        {
+            if (FindIndexOfKey(key) >= 0)
+                _keys.RemoveAt(FindIndexOfKey(key));
+
             RemoveDuplicateKeys();
             SaveKeys();
         }
@@ -81,13 +115,13 @@ namespace OrionServer.Utilities
         /// </summary>
         private static void RemoveDuplicateKeys()
         {
-            HashSet<string> uniqueKeySet = new HashSet<string>(_keys.ToArray());
+            HashSet<string> uniqueKeySet = new HashSet<string>(from key in _keys select key.Item1);
             string[] keys = new string[uniqueKeySet.Count];
             uniqueKeySet.CopyTo(keys);
 
             _keys.Clear();
             foreach (string key in keys)
-                _keys.Add(key);
+                _keys.Add(new Triple<string, string, DateTime>(key, "", new DateTime()));
 
             _keys.Sort();
         }
@@ -103,8 +137,8 @@ namespace OrionServer.Utilities
             lines.Add("{");
             lines.Add("\t\"keys\": [");
             for (int i = 0; i < _keys.Count - 1; i++)
-                lines.Add($"\t\t\"{_keys[i]}\",");
-            lines.Add($"\t\t\"{_keys[_keys.Count - 1]}\"\n\t]");
+                lines.Add($"\t\t\"{_keys[i].Item1}\",");
+            lines.Add($"\t\t\"{_keys[_keys.Count - 1].Item1}\"\n\t]");
             lines.Add("}");
 
             File.WriteAllLines(
@@ -114,9 +148,9 @@ namespace OrionServer.Utilities
             );
         }
 
-        internal static List<string> GetAllKeys()
+        internal static List<Triple<string, string, DateTime>> GetAllKeys()
         {
-            return new List<string>(_keys);
+            return new List<Triple<string, string, DateTime>>(_keys);
         }
     }
 }
