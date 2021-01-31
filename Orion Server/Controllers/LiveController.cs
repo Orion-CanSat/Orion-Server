@@ -22,23 +22,28 @@ namespace OrionServer.Controllers
         {
             try
             {
-                List<List<Utilities.Pair<string, string>>> chartsToShow = new();
+                List<List<List<Utilities.Pair<string, string>>>> chartsToShow = new();
 
-                string[] individualCharts = id.Split('-');
-                foreach (string individualChart in individualCharts)
+                string[] rows = id.Split('-');
+                foreach (string row in rows)
                 {
-                    List<Utilities.Pair<string, string>> chartElements = new();
-
-                    foreach (string chartGraph in individualChart.Split('_'))
+                    string[] individualCharts = row.Split('.');
+                    List<List<Utilities.Pair<string, string>>> chartsThisLine = new();
+                    foreach (string individualChart in individualCharts)
                     {
-                        Utilities.Pair<string, string> chartElement = new(chartGraph.Split('~')[0], chartGraph.Split('~')[1]);
+                        List<Utilities.Pair<string, string>> chartElements = new();
 
-                        chartElements.Add(chartElement);
+                        foreach (string chartGraph in individualChart.Split('_'))
+                        {
+                            Utilities.Pair<string, string> chartElement = new(chartGraph.Split('~')[0], chartGraph.Split('~')[1]);
+
+                            chartElements.Add(chartElement);
+                        }
+
+                        chartsThisLine.Add(chartElements);
                     }
-
-                    chartsToShow.Add(chartElements);
+                    chartsToShow.Add(chartsThisLine);
                 }
-
 
                 ViewBag.ChartsToShow = chartsToShow;
 

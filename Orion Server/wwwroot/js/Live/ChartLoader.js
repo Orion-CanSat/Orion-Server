@@ -50,37 +50,24 @@ async function UpdateChart(chart)
 
 $(function ()
 {
-    for (var i = 0; i < charts.length; i++)
+    for (var k = 0; k < charts.length; k++)
     {
-        var canva = document.createElement('canvas');
-        canva.style = 'width: 80%; padding-bottom: 5vh; padding-top: 5vh';
+        var row = document.createElement('div');
+        row.classList = 'row';
 
-        var hashValue = charts[i][0].Item1.hashCode();
+        for (var i = 0; i < charts[k].length; i++) {
+            var col = document.createElement('div');
+            col.classList = 'col';
 
-        var cc = new CustomChart(
-            canva,
-            ChartTypes.Line,
-            charts[i][0].Item1.charAt(0).toUpperCase() + charts[i][0].Item1.slice(1),
-            hashValue % 255,
-            (hashValue >> 8) % 255,
-            (hashValue >> 16) % 255
-        );
+            var canva = document.createElement('canvas');
+            canva.style = 'width: 50%; padding-bottom: 5vh; padding-top: 5vh';
 
-        loadedCharts.push(
-            {
-                name: charts[i][0].Item1,
-                chart: cc,
-                chartIndex: 0,
-                chartUnit: charts[i][0].Item2
-            }
-        );
+            var hashValue = charts[k][i][0].Item1.hashCode();
 
-        for (var j = 1; j < charts[i].length; j++)
-        {
-            hashValue = charts[i][j].Item1.hashCode();
-
-            cc.AddDataset(
-                charts[i][j].Item1.charAt(0).toUpperCase() + charts[i][j].Item1.slice(1),
+            var cc = new CustomChart(
+                canva,
+                ChartTypes.Line,
+                charts[k][i][0].Item1.charAt(0).toUpperCase() + charts[k][i][0].Item1.slice(1),
                 hashValue % 255,
                 (hashValue >> 8) % 255,
                 (hashValue >> 16) % 255
@@ -88,17 +75,41 @@ $(function ()
 
             loadedCharts.push(
                 {
-                    name: charts[i][j].Item1,
+                    name: charts[k][i][0].Item1,
                     chart: cc,
-                    chartIndex: j,
-                    chartUnit: charts[i][j].Item2
+                    chartIndex: 0,
+                    chartUnit: charts[k][i][0].Item2
                 }
             );
+
+            for (var j = 1; j < charts[k][i].length; j++) {
+                hashValue = charts[k][i][j].Item1.hashCode();
+
+                cc.AddDataset(
+                    charts[k][i][j].Item1.charAt(0).toUpperCase() + charts[k][i][j].Item1.slice(1),
+                    hashValue % 255,
+                    (hashValue >> 8) % 255,
+                    (hashValue >> 16) % 255
+                );
+
+                loadedCharts.push(
+                    {
+                        name: charts[k][i][j].Item1,
+                        chart: cc,
+                        chartIndex: j,
+                        chartUnit: charts[k][i][j].Item2
+                    }
+                );
+            }
+
+            cc.Update();
+
+            col.appendChild(canva);
+
+            row.appendChild(col);
         }
 
-        cc.Update();
-
-        chartContainer.appendChild(canva);
+        chartContainer.appendChild(row);
     }
 
 
