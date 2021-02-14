@@ -25,6 +25,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Remove="wwwdata\Database.json" />
     <Content Remove="wwwroot\js\chart.js" />
     <Content Remove="wwwroot\js\Live\ChartLoader.js" />
   </ItemGroup>
@@ -33,6 +34,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SQLServerConnection\SQLServerConnection.csproj" />
   </ItemGroup>
 
 </Project>

@@ -52,7 +52,9 @@ namespace OrionServer.Controllers.Data.Generic
                 {
                     await _writer.WriteLine($"+ {JsonConvert.SerializeObject(request.RequestData)}");
                     Console.WriteLine(request.RequestData);
-                    _data.Add(JsonConvert.DeserializeObject<T>(request.RequestData));
+                    T temp = JsonConvert.DeserializeObject<T>(request.RequestData);
+                    await Program.sqlConnection.Insert<T>(temp);
+                    _data.Add(temp);
 
                     returnVal.Error = false;
                     returnVal.ResponseData = "true";

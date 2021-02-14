@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrionServer
 {
@@ -180,6 +185,32 @@ namespace OrionServer
             Utilities.Authenticator.LoadAuthenticationKeys();
 
             Data.Pages.InitializePages();
+        }
+
+        public static void InitializeDB()
+        {
+            if (!File.Exists(Constants.DatabaseFile))
+                throw new IOException("Database file does not exist");
+
+            JObject? data = (JObject?)JsonConvert.DeserializeObject(File.ReadAllText(Constants.DatabaseFile));
+            if (data == null)
+                throw new Exception("Database file can not be parsed");
+            string? DatabaseIP = data["DatabaseIP"]?.Value<string>();
+            string? DatabaseID = data["DatabaseID"]?.Value<string>();
+            string? DatabasePassword = data["DatabasePassword"]?.Value<string>();
+            string? DatabaseName = data["DatabaseName"]?.Value<string>();
+            string? DatabaseType = data["DatabaseType"]?.Value<string>();
+
+            if (DatabaseIP == null || DatabaseID == null || DatabasePassword == null || DatabaseName == null)
+                throw new Exception("Database file is not in the correct form.\n{\n    \"DatabaseIP\":\"{INSERT DATABASE IP HERE}\",\n    \"DatabaseID\":\"{INSERT DATABASE ID/USER HERE}\",\n    \"DatabasePassword\":\"{INSERT DATABASE ID's/USER's PASSWORD HERE}\",\n    \"DatabaseName\":\"{INSERT DATABASE NAME HERE}\",\n    \"DatabaseType\":\"{INSERT {MySQL}}\",\n}");
+
+            if (DatabaseType == null)
+                DatabaseType = "MySQL";
+
+            if (DatabaseType == "MySQL")
+                Program.sqlConnection = new SQLServerConnection.MySQLConnection(DatabaseIP, DatabaseID, DatabasePassword, DatabaseName);
+            else
+                throw new Exception("Unknow database type.");
         }
 
         public Startup(IConfiguration configuration)
