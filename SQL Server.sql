@@ -2,8 +2,8 @@
 START TRANSACTION;
 SET time_zone = "+02:00";
 
-DROP TABLE IF EXISTS `altitude`;
-CREATE TABLE IF NOT EXISTS `altitude` (
+DROP TABLE IF EXISTS `Altitude`;
+CREATE TABLE IF NOT EXISTS `Altitude` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Date` date NOT NULL,
   `AltitudeM` double NOT NULL,
@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS `altitude` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-DROP TABLE IF EXISTS `humidity`;
-CREATE TABLE IF NOT EXISTS `humidity` (
+DROP TABLE IF EXISTS `Humidity`;
+CREATE TABLE IF NOT EXISTS `Humidity` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Date` date NOT NULL,
   `RelativeHumidity` double NOT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS `humidity` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-DROP TABLE IF EXISTS `pressure`;
-CREATE TABLE IF NOT EXISTS `pressure` (
+DROP TABLE IF EXISTS `Pressure`;
+CREATE TABLE IF NOT EXISTS `Pressure` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Date` date NOT NULL,
   `PressurePa` double NOT NULL,
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS `pressure` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-DROP TABLE IF EXISTS `temperature`;
-CREATE TABLE IF NOT EXISTS `temperature` (
+DROP TABLE IF EXISTS `Temperature`;
+CREATE TABLE IF NOT EXISTS `Temperature` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Date` date NOT NULL,
   `TemperatureC` double NOT NULL,

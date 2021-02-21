@@ -257,9 +257,6 @@ namespace OrionServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "api",
-                    pattern: "api/{controller}/{dt?}");
-                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Pages}/{id=Index}");
             });
