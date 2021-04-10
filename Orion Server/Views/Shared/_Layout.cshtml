@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - Orion Server</title>
     <link rel="stylesheet" href="~/lib/Trumbowyg/ui/trumbowyg.min.css">
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
@@ -19,12 +20,12 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        @{ 
+                        @{
                             foreach (KeyValuePair<string, string> page in OrionServer.Data.Pages.pages)
                             {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/Home/Pages/@Html.Raw(page.Key)">@Html.Raw(page.Key)</a>
-                        </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" href="/Home/Pages/@Html.Raw(page.Key)">@Html.Raw(page.Key)</a>
+                                </li>
                             }
                         }
                         <li class="nav-item">
@@ -44,6 +45,9 @@
                                 </li>
                                 <li class="nav-item">
                                     <a id="moduleBtn" class="nav-link text-dark" href="#">Modules</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="mailBtn" class="nav-link text-dark" href="#">Email</a>
                                 </li>
                                 <li class="nav-item">
                                     <a id="pagesBtn" class="nav-link text-dark" href="#">Pages</a>
@@ -73,6 +77,8 @@
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <script src="~/lib/Trumbowyg/trumbowyg.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 
     <script src="~/lib/Chart.js/Chart.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

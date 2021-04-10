@@ -1,6 +1,6 @@
 ﻿SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
-SET time_zone = "+02:00";
+SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `Altitude`;
 CREATE TABLE IF NOT EXISTS `Altitude` (
@@ -37,6 +37,25 @@ CREATE TABLE IF NOT EXISTS `Temperature` (
   `Date` date NOT NULL,
   `TemperatureC` double NOT NULL,
   `TemperatureF` double NOT NULL,
+  `Notice` text COLLATE utf8_bin,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+DROP TABLE IF EXISTS `Location`;
+CREATE TABLE IF NOT EXISTS `Location` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `Date` date NOT NULL,
+  `Latitude` double NOT NULL,
+  `Longitude` double NOT NULL,
+  `Notice` text COLLATE utf8_bin,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+DROP TABLE IF EXISTS `Status`;
+CREATE TABLE IF NOT EXISTS `Status` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `Date` date NOT NULL,
+  `Stat` int NOT NULL,
   `Notice` text COLLATE utf8_bin,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

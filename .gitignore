@@ -354,6 +354,12 @@ MigrationBackup/
 authenticationKeys.json
 *.dat
 
+# Orion Server Email Key
+email.json
+
+# Orion Database File
+database.json
+
 # Libs
 */wwwroot/lib/
 */wwwdata/errors/

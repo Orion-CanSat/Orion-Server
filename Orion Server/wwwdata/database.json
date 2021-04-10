@@ -1,7 +1,0 @@
-{
-  "DatabaseIP": "localhost",
-  "DatabaseID": "root",
-  "DatabasePassword": "",
-  "DatabaseName": "Orion_Database",
-  "DatabaseType": "MySQL"
-}

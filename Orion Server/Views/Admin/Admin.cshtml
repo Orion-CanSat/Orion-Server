@@ -41,6 +41,28 @@
         </div>
         <div id="moduleTable" style="padding-top: 5vh; padding-bottom: 5vh"></div>
     </div>
+    <div id="Mail-Page">
+        <div class="text-center" style="padding-bottom: 5vh">
+            <h1 class="display-4">Orion Mail Page</h1>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary" style="top-padding: 5vh; bottom-padding: 5vh; width: 100%" onclick="GetMailSettings()">Get Mail Settings</button>
+        </div>
+        <br />
+        <div class="form-group">
+            <input id="mailServerInput" class="form-control" type="text" placeholder="Server">
+            <br />
+            <input id="mailSenderInput" class="form-control" type="text" placeholder="Sender">
+            <br />
+            <input id="mailPasswordInput" class="form-control" type="password" placeholder="Password">
+            <br />
+            <input id="mailRecipientInput" class="form-control" type="text" placeholder="Recipiant">
+        </div>
+        <br />
+        <div class="text-center">
+            <button class="btn btn-primary" style="top-padding: 5vh; bottom-padding: 5vh; width: 100%" onclick="SetMailSettings()">Set Mail Settings</button>
+        </div>
+    </div>
     <div id="Pages-Page">
         <table class="table">
             <thead>

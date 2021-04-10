@@ -29,11 +29,9 @@ async function UpdateChart(chart)
             })
             .then(function (responseJSON)
             {
-                console.log(responseJSON);
                 if (!responseJSON.response)
                     return;
 
-                console.log(chart.name.charAt(0).toUpperCase() + chart.name.slice(1) + chart.chartUnit);
                 chart.chart.AddValue(
                     chart.chartIndex,
                     responseJSON.responseData.Date.split('T').shift().split('-').reverse().join('/') + ' ' + responseJSON.responseData.Date.split('T')[1],

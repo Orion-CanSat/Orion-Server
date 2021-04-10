@@ -17,12 +17,14 @@ namespace OrionServer
 
         public static void Main(string[] args)
         {
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(new Data.Location() { Date = DateTime.Now, Latitude = 10.0, Longitude = 3.0 }));
             Startup.CreateUpdateWWWData();
 
             try
             {
                 Startup.InitializeDB();
                 sqlConnection?.Open();
+                Startup.UpdateDatabase();
             }
             catch { }
 

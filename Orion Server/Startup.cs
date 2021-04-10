@@ -189,17 +189,41 @@ namespace OrionServer
 
         public static void InitializeDB()
         {
-            if (!File.Exists(Constants.DatabaseFile))
-                throw new IOException("Database file does not exist");
+            string? DatabaseIP = null;
+            string? DatabaseID = null;
+            string? DatabasePassword = null;
+            string? DatabaseName = null;
+            string? DatabaseType = null;
 
-            JObject? data = (JObject?)JsonConvert.DeserializeObject(File.ReadAllText(Constants.DatabaseFile));
-            if (data == null)
-                throw new Exception("Database file can not be parsed");
-            string? DatabaseIP = data["DatabaseIP"]?.Value<string>();
-            string? DatabaseID = data["DatabaseID"]?.Value<string>();
-            string? DatabasePassword = data["DatabasePassword"]?.Value<string>();
-            string? DatabaseName = data["DatabaseName"]?.Value<string>();
-            string? DatabaseType = data["DatabaseType"]?.Value<string>();
+            if (!File.Exists(Constants.DatabaseFile))
+            {
+                Console.Write("No Database configuration file was found. Would you like to create one? [Y/N]: ");
+                string? answer = Console.ReadLine();
+                if (answer.ToUpper() == "N")
+                    return;
+                Console.Write("DatabaseIP: ");
+                DatabaseIP = Console.ReadLine();
+                Console.Write("Database User ID: ");
+                DatabaseID = Console.ReadLine();
+                Console.Write("Database Password: ");
+                DatabasePassword = Console.ReadLine();
+                Console.Write("Database Name: ");
+                DatabaseName = Console.ReadLine();
+                Console.Write("Database Type [MySQL]: ");
+                DatabaseType = Console.ReadLine();
+                File.WriteAllText(Constants.DatabaseFile, $"{{\n\t\"DatabaseIP\": \"{DatabaseIP}\",\n\t\"DatabaseID\": \"{DatabaseID}\",\n\t\"DatabasePassword\": \"{DatabasePassword}\",\n\t\"DatabaseName\": \"{DatabaseName}\",\n\t\"DatabaseType\": \"{DatabaseType}\"\n}}");
+            }
+            else
+            {
+                JObject? data = (JObject?)JsonConvert.DeserializeObject(File.ReadAllText(Constants.DatabaseFile));
+                if (data == null)
+                    throw new Exception("Database file can not be parsed");
+                DatabaseIP = data["DatabaseIP"]?.Value<string>();
+                DatabaseID = data["DatabaseID"]?.Value<string>();
+                DatabasePassword = data["DatabasePassword"]?.Value<string>();
+                DatabaseName = data["DatabaseName"]?.Value<string>();
+                DatabaseType = data["DatabaseType"]?.Value<string>();
+            }
 
             if (DatabaseIP == null || DatabaseID == null || DatabasePassword == null || DatabaseName == null)
                 throw new Exception("Database file is not in the correct form.\n{\n    \"DatabaseIP\":\"{INSERT DATABASE IP HERE}\",\n    \"DatabaseID\":\"{INSERT DATABASE ID/USER HERE}\",\n    \"DatabasePassword\":\"{INSERT DATABASE ID's/USER's PASSWORD HERE}\",\n    \"DatabaseName\":\"{INSERT DATABASE NAME HERE}\",\n    \"DatabaseType\":\"{INSERT {MySQL}}\",\n}");
@@ -211,6 +235,11 @@ namespace OrionServer
                 Program.sqlConnection = new SQLServerConnection.MySQLConnection(DatabaseIP, DatabaseID, DatabasePassword, DatabaseName);
             else
                 throw new Exception("Unknow database type.");
+        }
+
+        public static void UpdateDatabase()
+        {
+            Program.sqlConnection?.ExecuteNonQuery(File.ReadAllText(Constants.MySQLTableCreationFile));
         }
 
         public Startup(IConfiguration configuration)

@@ -10,6 +10,12 @@ var moduleBtn;
 var reloadModulesBtn;
 var moduleTable;
 
+var mailBtn;
+var mailServerInput;
+var mailSenderInput;
+var mailPasswordInput;
+var mailRecipientInput;
+
 var pagesBtn;
 var activePageEditing = '';
 var newPageNameInput;
@@ -119,7 +125,6 @@ async function ReloadModules()
     }
 
     const response = await GetData(settings, true);
-    console.log(response);
     var tableHTML = '<table class="table"><thead><th scope="col">Module ID</th><th scope="col">Module Name</th><th scope="col">Actions</th></thead><tbody>';
     for (var i = 0; i < response.length; i++)
                 tableHTML += '<tr><th scope="row">' + response[i].Item1 + '</th><td>' + response[i].Item2 + '</td><td>' + ((response[i].Item3) ? '<button class="btn btn-primary" type="button" onclick="UnloadModule(\'' + response[i].Item2 + '\');">Unload Module</button>' : '<button class="btn btn-success" type="button" onclick="LoadModule(\'' + response[i].Item2 + '\');">Load Module</button>') + '<button class="btn btn-danger" type="button" onclick="RemoveModule(\'' + response[i].Item2 + '\');">Remove Module</button></td></tr>';
@@ -190,6 +195,55 @@ async function RemoveModule(moduleName)
     const response = await GetData(settings, true);
     if (response)
         window.location.reload();
+}
+
+async function GetMailSettings() {
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "getErrorMailSettings",
+            "requestData": ""
+        }
+    }
+
+    const response = await GetData(settings, true);
+    if (response == '{}')
+        return;
+
+    mailServerInput.value = response['Server'];
+    mailSenderInput.value = response['Sender'];
+    mailPasswordInput.value = response['Password'];
+    mailRecipientInput.value = response['Recipient'];
+}
+
+async function SetMailSettings() {
+    var settings = {
+        "url": "../api/adminapi",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": {
+            "authenticationID": authenticationKey,
+            "requestID": "setErrorMailSettings",
+            "requestData": "{\"Server\":\"" + mailServerInput.value + "\",\"Sender\": \"" + mailSenderInput.value + "\", \"Password\": \"" + mailPasswordInput.value + "\", \"Recipient\": \"" + mailRecipientInput.value + "\"}"
+        }
+    }
+
+    const response = await GetData(settings, true);
+
+    if (response != true) {
+        console.log("There was an error settings the error mail");
+    }
+
+    GetMailSettings();
 }
 
 async function LoadPageToEditor(pageName)
@@ -295,6 +349,12 @@ $(function()
     reloadModulesBtn = document.getElementById('reloadModules');
     moduleTable = document.getElementById('moduleTable');
 
+    mailBtn = document.getElementById('mailBtn');
+    mailServerInput = document.getElementById('mailServerInput');
+    mailSenderInput = document.getElementById('mailSenderInput');
+    mailPasswordInput = document.getElementById('mailPasswordInput');
+    mailRecipientInput = document.getElementById('mailRecipientInput');
+
     pagesBtn = document.getElementById('pagesBtn');
     newPageNameInput = document.getElementById('newPageNameInput');
     $('.my-editor').trumbowyg({
@@ -341,6 +401,9 @@ $(function()
 
     authenticationKeyBtn.onclick = function () { Show('Authentication'); }
     moduleBtn.onclick = function () { Show('Module'); }
+
+    mailBtn.onclick = function () { Show('Mail'); }
+
     pagesBtn.onclick = function () { Show('Pages'); }
 
     reloadAuthenticationKeysBtn.onclick = ReloadKeys;
@@ -359,6 +422,7 @@ $(function()
 
     ReloadKeys();
     ReloadModules();
+    GetMailSettings();
 
-    //setInterval(ReloadKeys, 5000);
+    setInterval(ReloadKeys, 5000);
 })

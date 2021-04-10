@@ -109,6 +109,34 @@ namespace OrionServer.Controllers
                         return "false";
                     }
                 }
+            },
+            {
+                "getErrorMailSettings", (string param) =>
+                {
+                    string returnVal = "{}";
+
+                    if (!ErrorAPIController.loadedEmail)
+                        ErrorAPIController.LoadMail();
+                    if (ErrorAPIController.errorMail != null)
+                        returnVal = JsonConvert.SerializeObject(ErrorAPIController.errorMail);
+
+                    return returnVal;
+                }
+            },
+            {
+                "setErrorMailSettings", (string param) =>
+                {
+                    try
+                    {
+                        ErrorAPIController.errorMail = JsonConvert.DeserializeObject<OrionServer.Data.ErrorMail>(param);
+                        System.IO.File.WriteAllText(Constants.ErrorEmail, param);
+                        return "true";
+                    }
+                    catch
+                    {
+                        return "false";
+                    }
+                }
             }
         };
 

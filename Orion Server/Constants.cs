@@ -9,5 +9,7 @@ namespace OrionServer
         public static readonly string ErrorSubmitions = $"{Constants.WWWDataFolder}/errors";
         public static readonly string AuthenticationKeysFile = $"{Constants.WWWDataFolder}/authenticationKeys.json";
         public static readonly string DatabaseFile = $"{Constants.WWWDataFolder}/database.json";
+        public static readonly string MySQLTableCreationFile = $"{Constants.WWWDataFolder}/SQL Server.sql";
+        public static readonly string ErrorEmail = $"{Constants.WWWDataFolder}/email.json";
     }
 }

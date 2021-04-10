@@ -7,10 +7,15 @@
 {
     <script type="text/javascript" src="~/js/chart.js"></script>
     <script type="text/javascript" src="~/js/Live/ChartLoader.js"></script>
+    <script type="text/javascript" src="~/js/Live/LiveMap.js"></script>
+    <script type="text/javascript" src="~/js/Live/Status.js"></script>
 }
 
-<div id="chart-container" class="container">
-</div>
+<h1 id="status" class="text-center"></h1>
+
+<div id="chart-container" class="container"></div>
+
+<div id="map" style="height: 360px"></div>
 
 <script>
     const charts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ChartsToShow));
